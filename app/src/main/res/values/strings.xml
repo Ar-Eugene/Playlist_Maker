@@ -1,3 +1,13 @@
 <resources>
-    <string name="app_name">Playlist_Maker</string>
+    <string name="app_name">PlaylistMaker</string>
+    <string name="playlist_name">Playlist maker</string>
+    <string name="train">Поиск</string>
+    <string name="mediateca">Медиатека</string>
+    <string name="settings">Настройки</string>
+    <string name="dark_theme">Темная тема</string>
+    <string name="share_app"> Поделиться приложением</string>
+    <string name="write_to_support">Написать в поддержку</string>
+    <string name="agreement">Пользовательское соглашение</string>
+    <string name="search">Поиск еще в работе</string>
+    <string name="mediatec_work">Медиатека еще в работе !</string>
 </resources>
