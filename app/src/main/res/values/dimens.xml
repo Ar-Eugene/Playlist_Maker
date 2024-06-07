@@ -5,4 +5,5 @@
     <dimen name="text_size_16sp">16sp</dimen>
     <dimen name="size_16dp">16dp</dimen>
     <dimen name="size_21dp">21dp</dimen>
+    <dimen name="size_18dp">18dp</dimen>
 </resources>
