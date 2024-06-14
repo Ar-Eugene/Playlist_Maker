@@ -18,7 +18,7 @@
             android:paddingTop="14dp"
             android:textColor="@color/white"
             android:text="@string/playlist_name"
-            android:textSize="@dimen/text_size_22sp"/>
+            style="@style/ScreenTitleStyle"/>
     </FrameLayout>
 
     <LinearLayout
@@ -30,58 +30,28 @@
         <Button
             android:id="@+id/search"
             android:layout_width="match_parent"
-            android:layout_weight ="1"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
-            app:cornerRadius="@dimen/size_16dp"
             android:text="@string/train"
-            android:textColor="@color/black"
-            android:textSize="@dimen/text_size_22sp"
-            android:layout_gravity="center"
-            style="@style/lowercase"
             app:icon="@drawable/light_mode"
-            app:iconTint="@color/black"
-            app:iconGravity="textStart"
-            android:letterSpacing="0"
-            android:foreground="?attr/selectableItemBackground"/>
+            style="@style/ButtonMainStyle"/>
 
         <Button
             android:id="@+id/mediateca"
             android:layout_marginVertical="8dp"
             android:layout_width="match_parent"
-            android:layout_weight ="1"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
-            app:cornerRadius="@dimen/size_16dp"
             android:text="@string/mediateca"
-            android:textColor="@color/black"
-            android:textSize="@dimen/text_size_22sp"
-            android:layout_gravity="center"
-            style="@style/lowercase"
             app:icon="@drawable/music_mode"
-            app:iconTint="@color/black"
-            app:iconGravity="textStart"
-            android:letterSpacing="0"
-            android:foreground="?attr/selectableItemBackground"/>
+            style="@style/ButtonMainStyle"/>
 
         <Button
             android:id="@+id/settings"
             android:layout_width="match_parent"
-            android:layout_weight ="1"
             android:layout_height="wrap_content"
             android:layout_marginBottom="28dp"
-            android:backgroundTint="@color/white"
-            app:cornerRadius="@dimen/size_16dp"
             android:text="@string/settings"
-            android:textColor="@color/black"
-            android:textSize="@dimen/text_size_22sp"
-            android:layout_gravity="center"
-            style="@style/lowercase"
             app:icon="@drawable/chest_model"
-            app:iconTint="@color/black"
-            app:iconGravity="textStart"
-            android:letterSpacing="0"
-            android:foreground="?attr/selectableItemBackground"/>
+            style="@style/ButtonMainStyle" />
     </LinearLayout>
 
 </LinearLayout>
