@@ -36,13 +36,46 @@
         <item name="android:foreground">?attr/selectableItemBackground</item>
     </style>
 
-    <style name="ScreenTitleStyle">
+    <style name="ToolbarTitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <style name="Theme.ColorBackgroundMain" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:background">@color/blue</item>
+    </style>
+
+    <style name="Theme.ColorBackgroundSettings" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:background">@color/white</item>
+    </style>
+
+    <style name="ScreenTitleSettingsOreSearch">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:padding">12dp</item>
         <item name="android:textSize">@dimen/text_size_22sp</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:textFontWeight">500</item>
     </style>
 
-    <style name="ToolbarTitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
-        <item name="android:textSize">22sp</item>
+    <style name="BackArrowSettingsOreSearch">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">0</item>
+        <item name="android:layout_marginVertical">4dp</item>
+        <item name="android:layout_marginStart">4dp</item>
+        <item name="tint">@color/black</item>
+        <item name="android:clickable">true</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+    </style>
+    <style name="EditTextSearch">
+        <item name="android:drawableTint">@color/grey</item>
+        <item name="android:textColorHint">@color/grey</item>
+    </style>
+
+    <style name="ImageViewCrossColor">
+        <item name="tint">@color/grey</item>
     </style>
 </resources>

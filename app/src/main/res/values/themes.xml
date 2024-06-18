@@ -3,7 +3,11 @@
     <style name="Base.Theme.Playlist_Maker" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-    </style>
+        <item name="colorControlActivated">@color/grey</item>
 
+    </style>
     <style name="Theme.Playlist_Maker" parent="Base.Theme.Playlist_Maker" />
+
+
+
 </resources>

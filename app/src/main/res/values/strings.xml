@@ -10,4 +10,12 @@
     <string name="agreement">Пользовательское соглашение</string>
     <string name="search">Поиск еще в работе</string>
     <string name="mediatec_work">Медиатека еще в работе !</string>
+    <string name="URL_Android_developer">https://practicum.yandex.ru/profile/android-developer/</string>
+    <string name="text_plain">text/plain</string>
+    <string name="mailto">mailto:</string>
+    <string name="my_email">artemenko2711@yandex.ru</string>
+    <string name="letter_subject">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
+    <string name="thanksToTheDevelopers">Спасибо разработчикам и разработчицам за крутое приложение!</string>
+    <string name="URL_agreement">https://yandex.ru/legal/practicum_offer/</string>
+    <string name="EDIT_TEXT_CONTENT">EDIT_TEXT_CONTENT</string>
 </resources>
