@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <attr name="ColorBlackOrWhite" format="reference" />
+    <attr name="ColorGreyOrWhite" format="reference" />
+    <attr name="ColorGreyOrBlack" format="reference" />
+    <attr name="ColorWhiteOrBlack" format="reference" />
+    <attr name="ColorBlueOrBlack" format="reference" />
 </resources>

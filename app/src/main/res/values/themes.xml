@@ -1,9 +1,14 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.Playlist_Maker" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.Playlist_Maker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
         <item name="colorControlActivated">@color/grey</item>
+        <item name="ColorBlackOrWhite">@color/black</item>
+        <item name="ColorGreyOrWhite">@color/grey</item>
+        <item name="ColorGreyOrBlack">@color/grey</item>
+        <item name="ColorWhiteOrBlack">@color/white</item>
+        <item name="ColorBlueOrBlack">@color/blue</item>
 
     </style>
     <style name="Theme.Playlist_Maker" parent="Base.Theme.Playlist_Maker" />
