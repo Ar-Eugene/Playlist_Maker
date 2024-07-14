@@ -13,6 +13,9 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.playlist_maker.retrofit.TrackApi
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class SearchActivity : AppCompatActivity() {
     private var editTextContent: String? = null
@@ -21,6 +24,7 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_search)
+
         val backArrowplayButton = findViewById<ImageView>(R.id.back_arrow)
         backArrowplayButton.setOnClickListener {
             finish()
@@ -63,6 +67,8 @@ class SearchActivity : AppCompatActivity() {
             val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
             recyclerView.layoutManager = LinearLayoutManager(this)
             recyclerView.adapter = adapter
+
+
 
     }
     private fun hideKeyboard() {

@@ -8,8 +8,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlist_maker.databinding.TrackItemBinding
 
-class TrackAdapter(private val trackList: List<Track>):RecyclerView.Adapter<TrackAdapter.TrackHolder>() {
-
+class TrackAdapter(private var trackList: List<Track>):RecyclerView.Adapter<TrackAdapter.TrackHolder>() {
+    var trackLэist = ArrayList<Track>()
     class TrackHolder(item:View):RecyclerView.ViewHolder(item) {
         val binding=TrackItemBinding.bind(item)
 
@@ -40,4 +40,5 @@ class TrackAdapter(private val trackList: List<Track>):RecyclerView.Adapter<Trac
     override fun getItemCount(): Int {
         return trackList.size
     }
+
 }

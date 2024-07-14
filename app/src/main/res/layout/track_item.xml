@@ -2,7 +2,8 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,7 +14,7 @@
             android:id="@+id/musicAlbumPicture"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/error_image"
+            tools:src="@drawable/error_image"
             android:paddingVertical="8dp"
             android:scaleType="centerCrop"
             android:paddingStart="13dp"/>
@@ -28,7 +29,7 @@
                     android:id ="@+id/nameOfTheSong"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/SmellsLikeTeenSpirit"
+                    tools:text="@string/SmellsLikeTeenSpirit"
                     android:layout_marginTop="14dp"
                     android:lines="1"
                     android:ellipsize="end"
@@ -48,7 +49,7 @@
                             android:id ="@+id/artistName"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/Nirvana"
+                            tools:text="@string/Nirvana"
                             style="@style/TextViewTrackItem"/>
                         <ImageView
                             android:layout_width="wrap_content"
@@ -59,7 +60,7 @@
                             android:id ="@+id/trackTime"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/Time5_01"
+                            tools:text="@string/Time5_01"
                             style="@style/TextViewTrackItem"/>
                     </LinearLayout>
 
