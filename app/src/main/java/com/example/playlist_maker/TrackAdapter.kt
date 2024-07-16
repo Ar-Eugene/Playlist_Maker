@@ -7,16 +7,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlist_maker.databinding.TrackItemBinding
+import java.text.SimpleDateFormat
+import java.util.Locale
 
-class TrackAdapter(private var trackList: List<Track>):RecyclerView.Adapter<TrackAdapter.TrackHolder>() {
-    var trackLэist = ArrayList<Track>()
+class TrackAdapter:RecyclerView.Adapter<TrackAdapter.TrackHolder>() {
+    var trackList = ArrayList<Track>()
     class TrackHolder(item:View):RecyclerView.ViewHolder(item) {
         val binding=TrackItemBinding.bind(item)
 
         fun bind(track: Track)= with(binding){
             nameOfTheSong.text=track.trackName
             artistName.text=track.artistName
-            trackTime.text=track.trackTime
+            trackTime.text= SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis)
             Glide.with(itemView.context)
                 .load(track.artworkUrl100)
                 .placeholder(R.drawable.error_image)

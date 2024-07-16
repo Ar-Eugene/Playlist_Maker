@@ -70,7 +70,7 @@
 
 
     <style name="TextViewTrackItem">
-        <item name="android:lines">1</item>
+        <item name="android:maxLines">1</item>
         <item name="android:ellipsize">end</item>
         <item name="android:textSize">@dimen/text_size_11sp</item>
         <item name="android:textColor">@color/grey</item>
