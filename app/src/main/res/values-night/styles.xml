@@ -79,6 +79,16 @@
         <item name="android:textFontWeight">400</item>
     </style>
 
+    <style name="ButtonInSearch" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <item name="android:backgroundTint">?attr/ColorBlackOrWhite</item>
+        <item name="android:textColor">?attr/ColorWhiteOrBlack</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">14sp</item>
+        <item name="cornerRadius">54dp</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textFontWeight">500</item>
+    </style>
 
 
 </resources>

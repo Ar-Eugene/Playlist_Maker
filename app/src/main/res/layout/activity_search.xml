@@ -81,7 +81,7 @@
             android:layout_marginTop="102dp"
             android:orientation="vertical"
             android:visibility="gone"
-            tools:visibility="visible">
+            tools:visibility="gone">
 
             <ImageView
                 android:id="@+id/placeholder_image"
@@ -95,7 +95,7 @@
                 android:id="@+id/placeholder_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="@dimen/size_24dp"
                 tools:text="@string/app_name"
                 android:textColor="?attr/ColorBlackOrWhite"
                 android:textSize="19sp"
@@ -107,13 +107,54 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:backgroundTint="?attr/ColorBlackOrWhite"
                 android:text="@string/refresh"
-                android:textColor="?attr/ColorWhiteOrBlack"
-                android:textSize="14sp"
-                android:fontFamily="@font/ys_display_medium" />
-
+                style="@style/ButtonInSearch"/>
         </LinearLayout>
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:id="@+id/history_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/size_24dp"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:text="@string/you_search"
+                    android:textColor="?attr/ColorBlackOrWhite"
+                    android:textAlignment="center"
+                    android:textSize="19sp"
+                    android:fontFamily="@font/ys_display_medium"
+                    android:textFontWeight ="500"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/history_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/size_24dp"
+                    tools:itemCount="1"
+                    tools:listitem="@layout/track_item" />
+
+                <Button
+                    android:id="@+id/button_clear_history"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/clear_history"
+                    style="@style/ButtonInSearch"/>
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
     </LinearLayout>
 
 </LinearLayout>
