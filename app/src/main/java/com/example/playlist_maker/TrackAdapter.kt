@@ -12,7 +12,8 @@ import java.util.Locale
 
 class TrackAdapter:RecyclerView.Adapter<TrackAdapter.TrackHolder>() {
     var trackList = ArrayList<Track>()
-    class TrackHolder(item:View):RecyclerView.ViewHolder(item) {
+    var onClickedTrack: ((Track) -> Unit)? = null
+    inner class TrackHolder(item:View):RecyclerView.ViewHolder(item) {
         val binding=TrackItemBinding.bind(item)
 
         fun bind(track: Track)= with(binding){
@@ -26,6 +27,7 @@ class TrackAdapter:RecyclerView.Adapter<TrackAdapter.TrackHolder>() {
                 .centerCrop()
                 .transform(RoundedCorners(10))
                 .into(musicAlbumPicture)
+
         }
 
     }
@@ -37,6 +39,9 @@ class TrackAdapter:RecyclerView.Adapter<TrackAdapter.TrackHolder>() {
 
     override fun onBindViewHolder(holder: TrackHolder, position: Int) {
         holder.bind(trackList[position])
+        holder.itemView.setOnClickListener {
+            onClickedTrack?.invoke(trackList[position])
+        }
     }
 
     override fun getItemCount(): Int {
