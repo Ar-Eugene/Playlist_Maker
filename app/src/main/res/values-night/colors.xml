@@ -8,5 +8,6 @@
 
 
     <color name="rounded_background">@color/white</color>
+    <color name="custom_cursor">@color/blue</color>
 
 </resources>

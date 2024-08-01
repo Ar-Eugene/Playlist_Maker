@@ -8,5 +8,6 @@
     <color name="whiteOrGrey">#E6E8EB</color>
 
     <color name="rounded_background">@color/whiteOrGrey</color>
+    <color name="custom_cursor">@color/blue</color>
 
 </resources>
