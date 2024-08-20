@@ -17,6 +17,14 @@
         android:src="@drawable/back_arrow_model"
         style="@style/ColorImageViewPlayer"
         android:foreground="?attr/selectableItemBackground"/>
+    <Space
+        android:id="@+id/space1"
+        android:layout_width="match_parent"
+        android:layout_height="16dp"
+        app:layout_constraintEnd_toStartOf="@id/right_guideline"
+        app:layout_constraintStart_toEndOf="@id/left_guideline"
+        app:layout_constraintTop_toBottomOf="@id/back_arrow"
+        app:layout_constraintBottom_toTopOf="@id/album_poster_image"/>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/left_guideline"
@@ -47,27 +55,31 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintDimensionRatio="1:1"
-
         android:scaleType="centerCrop"
-
         android:src="@drawable/placeholder_poster"
-        app:layout_constraintBottom_toTopOf="@id/track_name"
         app:layout_constraintEnd_toStartOf="@id/right_guideline"
         app:layout_constraintStart_toEndOf="@id/left_guideline"
-        app:layout_constraintTop_toBottomOf="@id/back_arrow"
-        android:layout_marginTop="30dp"
+        app:layout_constraintTop_toBottomOf="@id/space1"
+        app:layout_constraintBottom_toTopOf="@id/space"
         tools:ignore="ContentDescription" />
     <!-- пока вернул app:layout_constraintBottom_toTopOf="@id/track_name"-->
-
+    <Space
+        android:id="@+id/space"
+        android:layout_width="match_parent"
+        android:layout_height="16dp"
+        app:layout_constraintEnd_toStartOf="@id/right_guideline"
+        app:layout_constraintStart_toEndOf="@id/left_guideline"
+        app:layout_constraintTop_toBottomOf="@id/album_poster_image"
+        app:layout_constraintBottom_toTopOf="@id/track_name"
+        />
     <TextView
         android:id="@+id/track_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/size_24dp"
-        app:layout_constraintBottom_toTopOf="@id/track_artist"
-        app:layout_constraintEnd_toStartOf="@+id/right_guideline"
+        app:layout_constraintEnd_toStartOf="@id/right_guideline"
         app:layout_constraintStart_toEndOf="@id/left_guideline"
-        app:layout_constraintTop_toBottomOf="@+id/album_poster_image"
+        app:layout_constraintBottom_toTopOf="@id/track_artist"
+        android:layout_marginBottom="12dp"
         android:ellipsize="end"
         android:maxLines="1"
         android:singleLine="true"
@@ -82,12 +94,10 @@
         android:id="@+id/track_artist"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-
-        app:layout_constraintBottom_toTopOf="@id/play_button"
-        app:layout_constraintEnd_toStartOf="@+id/right_guideline"
+        android:layout_marginBottom="26dp"
+        app:layout_constraintEnd_toStartOf="@id/right_guideline"
         app:layout_constraintStart_toEndOf="@id/left_guideline"
-        app:layout_constraintTop_toBottomOf="@+id/track_name"
+        app:layout_constraintBottom_toTopOf="@id/play_button"
         android:ellipsize="end"
         android:maxLines="1"
         android:singleLine="true"
@@ -104,12 +114,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/play_button"
-        android:layout_marginTop="38dp"
+        android:paddingBottom="4dp"
         style="@style/ColorImageViewPlayer"
-        app:layout_constraintBottom_toTopOf="@+id/text_track_time_value"
         app:layout_constraintStart_toEndOf= "@id/left_guideline"
-        app:layout_constraintEnd_toEndOf= "@+id/right_guideline"
-        app:layout_constraintTop_toBottomOf="@+id/track_artist" />
+        app:layout_constraintEnd_toEndOf= "@id/right_guideline"
+        app:layout_constraintBottom_toTopOf="@id/text_track_time_value"/>
 
 
     <ImageView
@@ -126,10 +135,10 @@
         android:layout_width="@dimen/size_23dp"
         android:layout_height="@dimen/size_23dp"
         android:src="@drawable/add_playlist_button"
-        app:layout_constraintBottom_toBottomOf="@+id/add_to_playlist_button"
-        app:layout_constraintEnd_toEndOf="@+id/add_to_playlist_button"
-        app:layout_constraintStart_toStartOf="@+id/add_to_playlist_button"
-        app:layout_constraintTop_toTopOf="@+id/add_to_playlist_button" />
+        app:layout_constraintBottom_toBottomOf="@id/add_to_playlist_button"
+        app:layout_constraintEnd_toEndOf="@id/add_to_playlist_button"
+        app:layout_constraintStart_toStartOf="@id/add_to_playlist_button"
+        app:layout_constraintTop_toTopOf="@id/add_to_playlist_button" />
 
 
     <ImageView
@@ -146,11 +155,23 @@
         android:layout_width="@dimen/size_23dp"
         android:layout_height="25dp"
         android:src="@drawable/heart_button"
-        app:layout_constraintBottom_toBottomOf="@+id/like_button"
-        app:layout_constraintEnd_toEndOf="@+id/like_button"
-        app:layout_constraintStart_toStartOf="@+id/like_button"
-        app:layout_constraintTop_toTopOf="@+id/like_button" />
+        app:layout_constraintBottom_toBottomOf="@id/like_button"
+        app:layout_constraintEnd_toEndOf="@id/like_button"
+        app:layout_constraintStart_toStartOf="@id/like_button"
+        app:layout_constraintTop_toTopOf="@id/like_button" />
 
+    <TextView
+        android:id="@+id/text_track_time_value"
+        style="@style/TitlesTrackParameters"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/ys_display_medium"
+        android:text="@string/current_time"
+        android:textSize="14sp"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintEnd_toStartOf="@id/right_guideline"
+        app:layout_constraintStart_toEndOf="@id/left_guideline"
+        app:layout_constraintBottom_toTopOf="@id/text_duration_value" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/left_text_guideline"
@@ -167,14 +188,14 @@
         android:orientation="vertical"
         app:layout_constraintGuide_end="@dimen/size_16dp" />
 
-
     <TextView
         android:id="@+id/text_duration"
         style="@style/FieldParameters"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/track_time"
-        app:layout_constraintBottom_toTopOf="@id/bottom_guideline_time"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@id/text_album"
         app:layout_constraintStart_toEndOf="@id/left_text_guideline" />
 
 
@@ -184,34 +205,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/track_time"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_guideline_time"
-        app:layout_constraintEnd_toStartOf="@+id/right_text_guideline" />
-
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/bottom_guideline_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_end="156dp" />
-
-
-    <TextView
-        android:id="@+id/text_track_time_value"
-        style="@style/TitlesTrackParameters"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="30dp"
-        android:fontFamily="@font/ys_display_medium"
-        android:text="@string/current_time"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@+id/text_duration"
-        app:layout_constraintEnd_toStartOf="@id/right_guideline"
-        app:layout_constraintStart_toEndOf="@id/left_guideline"
-        app:layout_constraintTop_toBottomOf="@+id/play_button"
-        android:textFontWeight="500"/>
-
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@id/text_album"
+        app:layout_constraintEnd_toStartOf="@id/right_text_guideline" />
 
     <TextView
         android:id="@+id/text_album"
@@ -219,7 +215,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/album"
-        app:layout_constraintBottom_toTopOf="@id/bottom_guideline_album"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@id/text_year"
         app:layout_constraintStart_toEndOf="@id/left_text_guideline" />
 
 
@@ -231,17 +228,10 @@
         android:gravity="end"
         android:maxLines="1"
         android:text="@string/album"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_guideline_album"
-        app:layout_constraintEnd_toStartOf="@+id/right_text_guideline"
-        app:layout_constraintStart_toEndOf="@+id/text_duration" />
-
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/bottom_guideline_album"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_end="124dp" />
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@id/text_year"
+        app:layout_constraintEnd_toStartOf="@id/right_text_guideline"
+        app:layout_constraintStart_toEndOf="@id/text_duration" />
 
 
     <TextView
@@ -250,7 +240,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/year"
-        app:layout_constraintBottom_toTopOf="@id/bottom_guideline_year"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@id/text_genre"
         app:layout_constraintStart_toEndOf="@id/left_text_guideline" />
 
 
@@ -260,16 +251,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/year"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_guideline_year"
-        app:layout_constraintEnd_toStartOf="@+id/right_text_guideline" />
-
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/bottom_guideline_year"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_end="92dp" />
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@id/text_genre"
+        app:layout_constraintEnd_toStartOf="@id/right_text_guideline" />
 
 
     <TextView
@@ -278,7 +262,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/genre"
-        app:layout_constraintBottom_toTopOf="@id/bottom_guideline_genre"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@id/text_country"
         app:layout_constraintStart_toEndOf="@id/left_text_guideline" />
 
 
@@ -288,17 +273,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/genre"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_guideline_genre"
-        app:layout_constraintEnd_toStartOf="@+id/right_text_guideline" />
-
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/bottom_guideline_genre"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_end="60dp" />
-
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@id/text_country"
+        app:layout_constraintEnd_toStartOf="@id/right_text_guideline" />
 
     <TextView
         android:id="@+id/text_country"
@@ -306,7 +283,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/country"
-        app:layout_constraintBottom_toTopOf="@id/bottom_guideline_country"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/left_text_guideline" />
 
 
@@ -316,16 +294,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/country"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_guideline_country"
-        app:layout_constraintEnd_toStartOf="@+id/right_text_guideline" />
-
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/bottom_guideline_country"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_end="28dp" />
-
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/right_text_guideline" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
