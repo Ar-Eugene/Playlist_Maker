@@ -27,10 +27,18 @@
     <string name="Time5_01">5:01</string>
     <string name="imageNirvanaUrl">https://is5-ssl.mzstatic.com/image/thumb/Music115/v4/7b/58/c2/7b58c21a-2b51-2bb2-e59a-9bb9b96ad8c3/00602567924166.rgb.jpg/100x100bb.jpg</string>
 
-<!-- тут мы храним строки при ошибке поиска песен-->
+    <!-- тут мы храним строки при ошибке поиска песен-->
     <string name="nothing_found">Ничего не нашлось</string>
     <string name="check_connection">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
     <string name="refresh">Обновить</string>
 
+    <string name="track_name">Название трека</string>
+    <string name="artist_name">Имя исполнителя</string>
+    <string name="track_time">Длительность</string>
+    <string name="country">Страна</string>
+    <string name="genre">Жанр</string>
+    <string name="year">Год</string>
+    <string name="album">Альбом</string>
+    <string name="current_time">00:00</string>
 
 </resources>

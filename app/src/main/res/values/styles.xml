@@ -89,4 +89,22 @@
         <item name="android:textFontWeight">500</item>
     </style>
 
+    <style name="ColorImageViewPlayer">
+        <item name="tint">@color/black</item>
+    </style>
+
+    <style name="FieldParameters">
+        <item name="android:textSize">@dimen/text_size_13sp</item>
+        <item name="android:textColor">@color/grey</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textFontWeight">400</item>
+    </style>
+
+    <style name="TitlesTrackParameters">
+        <item name="android:textSize">@dimen/text_size_13sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textFontWeight">400</item>
+    </style>
+
 </resources>

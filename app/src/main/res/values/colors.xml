@@ -6,8 +6,9 @@
     <color name="grey">#AEAFB4</color>
     <color name="dark_grey">#818C99</color>
     <color name="whiteOrGrey">#E6E8EB</color>
+    <color name="grey_background">#401A1B22</color>
 
     <color name="rounded_background">@color/whiteOrGrey</color>
     <color name="custom_cursor">@color/blue</color>
-
+    <color name="transparent_background_grey_player">@color/grey_background</color>
 </resources>

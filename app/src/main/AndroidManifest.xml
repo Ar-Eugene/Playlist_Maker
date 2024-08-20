@@ -16,6 +16,10 @@
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
         tools:targetApi="31">
         <activity
+            android:name=".PlayerActivity"
+            android:exported="false"
+            android:theme="@style/Base.Theme.Playlist_Maker" />
+        <activity
             android:name=".SettingsActivity"
             android:exported="false"
             android:theme="@style/Base.Theme.Playlist_Maker" />

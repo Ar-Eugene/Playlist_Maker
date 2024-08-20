@@ -5,9 +5,10 @@
     <color name="blue">#3772E7</color>
     <color name="grey">#AEAFB4</color>
     <color name="dark_grey">#818C99</color>
-
+    <color name="grey_background">#40FFFFFF</color>
 
     <color name="rounded_background">@color/white</color>
     <color name="custom_cursor">@color/blue</color>
+    <color name="transparent_background_grey_player">@color/grey_background</color>
 
 </resources>

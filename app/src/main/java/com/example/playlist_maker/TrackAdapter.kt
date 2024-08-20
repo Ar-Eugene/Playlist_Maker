@@ -1,5 +1,6 @@
 package com.example.playlist_maker
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,6 +40,7 @@ class TrackAdapter:RecyclerView.Adapter<TrackAdapter.TrackHolder>() {
 
     override fun onBindViewHolder(holder: TrackHolder, position: Int) {
         holder.bind(trackList[position])
+
         holder.itemView.setOnClickListener {
             onClickedTrack?.invoke(trackList[position])
         }

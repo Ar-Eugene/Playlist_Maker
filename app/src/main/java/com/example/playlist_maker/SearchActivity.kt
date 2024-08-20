@@ -1,6 +1,7 @@
 package com.example.playlist_maker
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -29,7 +30,11 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var historyTrackList: SearchHistory
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var binding: ActivitySearchBinding
-    private var errorShown = false // Флаг, показан ли был placeholderError после последнего запроса
+    private var errorShown = false // Флаг, показан ли placeholderError после последнего запроса
+
+    companion object {
+        private const val REQUEST_CODE_PLAYER = 1
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,9 +44,14 @@ class SearchActivity : AppCompatActivity() {
         sharedPreferences = getSharedPreferences(Constants.HISTORY_TRACKLIST, Context.MODE_PRIVATE)
         historyTrackList = SearchHistory(sharedPreferences)
 
+        // Настраиваем click listener для адаптера поиска
         trackAdapter.onClickedTrack = { track ->
-            historyTrackList.addTrack(track)
-            updateHistoryRecyclerView()
+            handleTrackClick(track, false)
+        }
+
+        // Настраиваем click listener для адаптера истории
+        historyAdapter.onClickedTrack = { track ->
+            handleTrackClick(track, true)
         }
 
         binding.buttonClearHistory.setOnClickListener {
@@ -67,7 +77,7 @@ class SearchActivity : AppCompatActivity() {
             trackAdapter.notifyDataSetChanged()
             showHistory()
             binding.placeholderError.visibility = View.GONE
-            errorShown = false // После очистки текста с clearButton, сбрасываем флаг ошибки
+            errorShown = false
         }
 
         inputEditText.addTextChangedListener(object : TextWatcher {
@@ -98,13 +108,11 @@ class SearchActivity : AppCompatActivity() {
         })
 
         inputEditText.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus &&  inputEditText.text.isEmpty()) {
-                // Если inputEditText в фокусе, скрываем historyLayout
+            if (hasFocus && inputEditText.text.isEmpty()) {
                 binding.historyLayout.visibility = View.GONE
                 updateHistoryRecyclerView()
                 showHistory()
             } else {
-                // Если inputEditText потерял фокус, проверяем наличие истории и отображаем historyLayout, если есть данные
                 updateHistoryRecyclerView()
                 hideHistory()
             }
@@ -149,18 +157,39 @@ class SearchActivity : AppCompatActivity() {
                         trackList.addAll(response.body()?.tracks!!)
                         trackAdapter.notifyDataSetChanged()
                         binding.placeholderError.visibility = View.GONE
-                        errorShown = false // Успешный запрос, сбрасываем флаг ошибки
+                        errorShown = false
                     } else {
                         showError(R.drawable.search_error, R.string.nothing_found, false)
-                        errorShown = true // Показываем placeholderError, устанавливаем флаг ошибки
+                        errorShown = true
                     }
                 }
 
                 override fun onFailure(call: Call<TreckResponse>, t: Throwable) {
                     showError(R.drawable.connection_problem, R.string.check_connection, true)
-                    errorShown = true // Показываем placeholderError, устанавливаем флаг ошибки
+                    errorShown = true
                 }
             })
+    }
+
+    // Функция обработки клика на трек (из поиска или истории)
+    private fun handleTrackClick(track: Track, isFromHistory: Boolean = false) {
+        // Добавляем трек в историю, если его там нет
+        historyTrackList.addTrack(track)
+        updateHistoryRecyclerView()
+
+        // Переход в PlayerActivity
+        val intent = Intent(this, PlayerActivity::class.java).apply {
+            putExtra("trackName", track.trackName)
+            putExtra("artistName", track.artistName)
+            putExtra("trackTimeMillis", track.trackTimeMillis)
+            putExtra("artworkUrl100", track.artworkUrl100)
+            putExtra("country", track.country)
+            putExtra("collectionName", track.collectionName)
+            putExtra("primaryGenreName", track.primaryGenreName)
+            putExtra("releaseDate", track.releaseDate)
+            putExtra("isFromHistory", isFromHistory) // Добавляем флаг
+        }
+        startActivityForResult(intent, REQUEST_CODE_PLAYER)
     }
 
     private fun updateHistoryRecyclerView() {
@@ -168,7 +197,7 @@ class SearchActivity : AppCompatActivity() {
         historyAdapter.notifyDataSetChanged()
         val isHistoryEmpty = historyAdapter.trackList.isEmpty()
 
-        // Проверяем, в фокусе ли inputEditText и скрываем historyLayout, если да.
+        // Скрываем historyLayout, если нет данных или EditText в фокусе
         binding.historyLayout.visibility = if (isHistoryEmpty || binding.inputEditText.hasFocus()) View.GONE else View.VISIBLE
     }
 
@@ -179,7 +208,7 @@ class SearchActivity : AppCompatActivity() {
         binding.placeholderImage.setImageResource(imageResId)
         binding.placeholderMessage.text = getString(messageResId)
         binding.refreshButton.visibility = if (showRefreshButton) View.VISIBLE else View.GONE
-        errorShown = true // Показываем placeholderError, устанавливаем флаг ошибки
+        errorShown = true
     }
 
     private fun hideKeyboard() {
@@ -211,8 +240,20 @@ class SearchActivity : AppCompatActivity() {
         editTextContent = savedInstanceState.getString(getString(R.string.EDIT_TEXT_CONTENT))
         findViewById<EditText>(R.id.inputEditText).setText(editTextContent)
     }
-}
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == REQUEST_CODE_PLAYER && resultCode == RESULT_OK) {
+            val isFromHistory = data?.getBooleanExtra("isFromHistory", false) ?: false
+
+            if (isFromHistory) {
+                updateHistoryRecyclerView()
+                showHistory()
+            }
+        }
+    }
+}
 fun dpToPx(dp: Float, context: Context): Int {
     return TypedValue.applyDimension(
         TypedValue.COMPLEX_UNIT_DIP,
