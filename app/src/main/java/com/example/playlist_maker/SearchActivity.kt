@@ -5,6 +5,8 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.TypedValue
@@ -31,7 +33,9 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var binding: ActivitySearchBinding
     private var errorShown = false // Флаг, показан ли placeholderError после последнего запроса
-
+    private lateinit var handler:Handler
+    private lateinit var searchRunnable:Runnable
+    private var isClickAllowed = true
     companion object {
         private const val REQUEST_CODE_PLAYER = 1
     }
@@ -43,6 +47,8 @@ class SearchActivity : AppCompatActivity() {
 
         sharedPreferences = getSharedPreferences(Constants.HISTORY_TRACKLIST, Context.MODE_PRIVATE)
         historyTrackList = SearchHistory(sharedPreferences)
+        handler = Handler(Looper.getMainLooper())
+        searchRunnable = Runnable { search() }
 
         // Настраиваем click listener для адаптера поиска
         trackAdapter.onClickedTrack = { track ->
@@ -88,6 +94,7 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 editTextContent = s.toString()
                 clearButton.visibility = if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
+                searchDebounce()
 
                 if (s.isNullOrEmpty()) {
                     trackList.clear()
@@ -99,6 +106,11 @@ class SearchActivity : AppCompatActivity() {
                     }
                 } else {
                     hideHistory()
+                }
+                // Скрываем placeholderError, если пользователь начал вводить текст
+                if (errorShown) {
+                    binding.placeholderError.visibility = View.GONE
+                    errorShown = false
                 }
             }
 
@@ -122,20 +134,37 @@ class SearchActivity : AppCompatActivity() {
             search()
         }
 
-        binding.inputEditText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                search()
-                true
-            } else {
-                false
-            }
-        }
+//        binding.inputEditText.setOnEditorActionListener { _, actionId, _ ->
+//            if (actionId == EditorInfo.IME_ACTION_DONE) {
+//                search()
+//                true
+//            } else {
+//                false
+//            }
+//        }
 
         if (inputEditText.text.isEmpty() && !inputEditText.hasFocus()) {
             hideHistory()
         }
-    }
+        clickDebounce()
 
+    }
+    // метод, отвечающий за то, что поиск происходит без нажатия на кнопку, а каждые 2 сек после ввода символа
+    private fun searchDebounce() {
+        handler.removeCallbacks(searchRunnable)
+        if (!editTextContent.isNullOrEmpty()) {
+            handler.postDelayed(searchRunnable, Constants.SEARCH_DEBOUNCE_DELAY)
+        }
+    }
+    // метод, отвечающий за то, что после каждого нажатия будет задержка в 1 сек, чтобы пользователь не нажал еще раз и не было бага
+    private fun clickDebounce() : Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({ isClickAllowed = true }, Constants.CLICK_DEBOUNCE_DELAY)
+        }
+        return current
+    }
     private fun buildRecyclerView() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         trackAdapter.trackList = trackList
@@ -147,6 +176,10 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun search() {
+        val query = binding.inputEditText.text.toString()
+        if (query.isEmpty()) {
+            return
+        }
         trackApi.getTrack(binding.inputEditText.text.toString())
             .enqueue(object : Callback<TreckResponse> {
                 override fun onResponse(call: Call<TreckResponse>, response: Response<TreckResponse>) {

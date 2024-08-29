@@ -1,15 +1,9 @@
 package com.example.playlist_maker
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.Switch
-import com.example.playlist_maker.constans.Constants
 import com.example.playlist_maker.databinding.ActivitySettingsBinding
 import com.example.playlist_maker.theme_manager.ThemeManager
 import com.google.android.material.switchmaterial.SwitchMaterial
