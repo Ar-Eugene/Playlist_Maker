@@ -14,6 +14,8 @@ class Constants {
          const val SEARCH_DEBOUNCE_DELAY = 2000L
         // для хранения задержки отклика от пользователя
         const val CLICK_DEBOUNCE_DELAY = 1000L
+        // кажется это для хранения передачи данных между поиском и медиаплеером
+        const val REQUEST_CODE_PLAYER = 1
 
     }
 }

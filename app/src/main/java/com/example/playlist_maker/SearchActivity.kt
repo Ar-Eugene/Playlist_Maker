@@ -14,6 +14,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.ProgressBar
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlist_maker.constans.Constants
 import com.example.playlist_maker.databinding.ActivitySearchBinding
@@ -36,15 +37,16 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var handler:Handler
     private lateinit var searchRunnable:Runnable
     private var isClickAllowed = true
-    companion object {
-        private const val REQUEST_CODE_PLAYER = 1
-    }
-
+    private lateinit var progressBar:ProgressBar
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val inputEditText = binding.inputEditText
+        val clearButton = binding.clearIcon
+        progressBar = binding.progressBar
+        progressBar.visibility = View.GONE
         sharedPreferences = getSharedPreferences(Constants.HISTORY_TRACKLIST, Context.MODE_PRIVATE)
         historyTrackList = SearchHistory(sharedPreferences)
         handler = Handler(Looper.getMainLooper())
@@ -54,27 +56,18 @@ class SearchActivity : AppCompatActivity() {
         trackAdapter.onClickedTrack = { track ->
             handleTrackClick(track, false)
         }
-
         // Настраиваем click listener для адаптера истории
         historyAdapter.onClickedTrack = { track ->
             handleTrackClick(track, true)
         }
-
         binding.buttonClearHistory.setOnClickListener {
             historyTrackList.clearHistory()
             updateHistoryRecyclerView()
         }
-
-        buildRecyclerView()
-
         val backArrowplayButton = binding.backArrow
         backArrowplayButton.setOnClickListener {
             finish()
         }
-
-        val inputEditText = binding.inputEditText
-        val clearButton = binding.clearIcon
-
         clearButton.setOnClickListener {
             inputEditText.text.clear()
             hideKeyboard()
@@ -85,17 +78,14 @@ class SearchActivity : AppCompatActivity() {
             binding.placeholderError.visibility = View.GONE
             errorShown = false
         }
-
         inputEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 // empty
             }
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 editTextContent = s.toString()
                 clearButton.visibility = if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
                 searchDebounce()
-
                 if (s.isNullOrEmpty()) {
                     trackList.clear()
                     trackAdapter.notifyDataSetChanged()
@@ -113,12 +103,10 @@ class SearchActivity : AppCompatActivity() {
                     errorShown = false
                 }
             }
-
             override fun afterTextChanged(s: Editable?) {
                 // empty
             }
         })
-
         inputEditText.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus && inputEditText.text.isEmpty()) {
                 binding.historyLayout.visibility = View.GONE
@@ -129,11 +117,9 @@ class SearchActivity : AppCompatActivity() {
                 hideHistory()
             }
         }
-
         binding.refreshButton.setOnClickListener {
             search()
         }
-
 //        binding.inputEditText.setOnEditorActionListener { _, actionId, _ ->
 //            if (actionId == EditorInfo.IME_ACTION_DONE) {
 //                search()
@@ -142,11 +128,11 @@ class SearchActivity : AppCompatActivity() {
 //                false
 //            }
 //        }
-
         if (inputEditText.text.isEmpty() && !inputEditText.hasFocus()) {
             hideHistory()
         }
         clickDebounce()
+        buildRecyclerView()
 
     }
     // метод, отвечающий за то, что поиск происходит без нажатия на кнопку, а каждые 2 сек после ввода символа
@@ -176,13 +162,11 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun search() {
-        val query = binding.inputEditText.text.toString()
-        if (query.isEmpty()) {
-            return
-        }
+        progressBar.visibility = View.VISIBLE
         trackApi.getTrack(binding.inputEditText.text.toString())
             .enqueue(object : Callback<TreckResponse> {
                 override fun onResponse(call: Call<TreckResponse>, response: Response<TreckResponse>) {
+                    progressBar.visibility = View.GONE // Прячем ProgressBar после успешного выполнения запроса
                     if (response.code() == 200) {
                         trackList.clear()
                     }
@@ -196,20 +180,18 @@ class SearchActivity : AppCompatActivity() {
                         errorShown = true
                     }
                 }
-
                 override fun onFailure(call: Call<TreckResponse>, t: Throwable) {
+                    progressBar.visibility = View.GONE // Прячем ProgressBar после выполнения запроса с ошибкой
                     showError(R.drawable.connection_problem, R.string.check_connection, true)
                     errorShown = true
                 }
             })
     }
-
     // Функция обработки клика на трек (из поиска или истории)
     private fun handleTrackClick(track: Track, isFromHistory: Boolean = false) {
         // Добавляем трек в историю, если его там нет
         historyTrackList.addTrack(track)
         updateHistoryRecyclerView()
-
         // Переход в PlayerActivity
         val intent = Intent(this, PlayerActivity::class.java).apply {
             putExtra("trackName", track.trackName)
@@ -222,18 +204,15 @@ class SearchActivity : AppCompatActivity() {
             putExtra("releaseDate", track.releaseDate)
             putExtra("isFromHistory", isFromHistory) // Добавляем флаг
         }
-        startActivityForResult(intent, REQUEST_CODE_PLAYER)
+        startActivityForResult(intent, Constants.REQUEST_CODE_PLAYER)
     }
-
     private fun updateHistoryRecyclerView() {
         historyAdapter.trackList = ArrayList(historyTrackList.trackListHistory)
         historyAdapter.notifyDataSetChanged()
         val isHistoryEmpty = historyAdapter.trackList.isEmpty()
-
         // Скрываем historyLayout, если нет данных или EditText в фокусе
         binding.historyLayout.visibility = if (isHistoryEmpty || binding.inputEditText.hasFocus()) View.GONE else View.VISIBLE
     }
-
     private fun showError(imageResId: Int, messageResId: Int, showRefreshButton: Boolean) {
         trackList.clear()
         trackAdapter.notifyDataSetChanged()
@@ -243,14 +222,12 @@ class SearchActivity : AppCompatActivity() {
         binding.refreshButton.visibility = if (showRefreshButton) View.VISIBLE else View.GONE
         errorShown = true
     }
-
     private fun hideKeyboard() {
         val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         currentFocus?.let {
             inputMethodManager.hideSoftInputFromWindow(it.windowToken, 0)
         }
     }
-
     private fun showHistory() {
         if (historyAdapter.trackList.isNotEmpty()) {
             binding.historyLayout.visibility = View.VISIBLE
@@ -258,28 +235,22 @@ class SearchActivity : AppCompatActivity() {
             binding.historyLayout.visibility = View.GONE
         }
     }
-
     private fun hideHistory() {
         binding.historyLayout.visibility = View.GONE
     }
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(getString(R.string.EDIT_TEXT_CONTENT), editTextContent)
     }
-
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         editTextContent = savedInstanceState.getString(getString(R.string.EDIT_TEXT_CONTENT))
         findViewById<EditText>(R.id.inputEditText).setText(editTextContent)
     }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == REQUEST_CODE_PLAYER && resultCode == RESULT_OK) {
+        if (requestCode == Constants.REQUEST_CODE_PLAYER && resultCode == RESULT_OK) {
             val isFromHistory = data?.getBooleanExtra("isFromHistory", false) ?: false
-
             if (isFromHistory) {
                 updateHistoryRecyclerView()
                 showHistory()
