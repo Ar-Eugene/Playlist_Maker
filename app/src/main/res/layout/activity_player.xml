@@ -118,7 +118,8 @@
         style="@style/ColorImageViewPlayer"
         app:layout_constraintStart_toEndOf= "@id/left_guideline"
         app:layout_constraintEnd_toEndOf= "@id/right_guideline"
-        app:layout_constraintBottom_toTopOf="@id/text_track_time_value"/>
+        app:layout_constraintBottom_toTopOf="@id/text_track_time_value"
+        android:foreground="?attr/selectableItemBackground"/>
 
 
     <ImageView

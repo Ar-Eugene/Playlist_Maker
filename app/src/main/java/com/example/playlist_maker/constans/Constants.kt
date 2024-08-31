@@ -16,6 +16,11 @@ class Constants {
         const val CLICK_DEBOUNCE_DELAY = 1000L
         // кажется это для хранения передачи данных между поиском и медиаплеером
         const val REQUEST_CODE_PLAYER = 1
-
+        // константы для отслеживания состояние медиаплеера
+         const val STATE_DEFAULT = 0
+         const val STATE_PREPARED = 1
+         const val STATE_PLAYING = 2
+         const val STATE_PAUSED = 3
+        //
     }
 }
