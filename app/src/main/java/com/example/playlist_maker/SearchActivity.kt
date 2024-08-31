@@ -118,16 +118,10 @@ class SearchActivity : AppCompatActivity() {
             }
         }
         binding.refreshButton.setOnClickListener {
+            binding.placeholderError.visibility = View.GONE
             search()
         }
-//        binding.inputEditText.setOnEditorActionListener { _, actionId, _ ->
-//            if (actionId == EditorInfo.IME_ACTION_DONE) {
-//                search()
-//                true
-//            } else {
-//                false
-//            }
-//        }
+
         if (inputEditText.text.isEmpty() && !inputEditText.hasFocus()) {
             hideHistory()
         }
