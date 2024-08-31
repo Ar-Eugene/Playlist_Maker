@@ -35,8 +35,6 @@ class PlayerActivity : AppCompatActivity() {
             }
         }
     }
-    var url = "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/ac/c7/d1/acc7d13f-6634-495f-caf6-491eccb505e8/mzaf_4002676889906514534.plus.aac.p.m4a"
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayerBinding.inflate(layoutInflater)
@@ -47,7 +45,7 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         // Получаем переданные данные
-        val previewUrl = intent.getStringExtra("previewUrl") ?: url// не верный url
+        val previewUrl = intent.getStringExtra("previewUrl") ?: return
         val trackName = intent.getStringExtra("trackName")
         val artistName = intent.getStringExtra("artistName")
         val trackTimeMillis = intent.getLongExtra("trackTimeMillis", 0)

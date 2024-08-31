@@ -194,6 +194,7 @@ class SearchActivity : AppCompatActivity() {
         updateHistoryRecyclerView()
         // Переход в PlayerActivity
         val intent = Intent(this, PlayerActivity::class.java).apply {
+            putExtra("previewUrl",track.previewUrl)
             putExtra("trackName", track.trackName)
             putExtra("artistName", track.artistName)
             putExtra("trackTimeMillis", track.trackTimeMillis)
