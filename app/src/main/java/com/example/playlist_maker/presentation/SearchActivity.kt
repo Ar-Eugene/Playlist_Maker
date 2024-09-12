@@ -1,4 +1,4 @@
-package com.example.playlist_maker
+package com.example.playlist_maker.presentation
 
 import android.content.Context
 import android.content.Intent
@@ -11,15 +11,16 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.TypedValue
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ProgressBar
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.playlist_maker.R
+import com.example.playlist_maker.domain.Track
 import com.example.playlist_maker.constans.Constants
 import com.example.playlist_maker.databinding.ActivitySearchBinding
-import com.example.playlist_maker.retrofit.TrackInternet
-import com.example.playlist_maker.retrofit.TreckResponse
+import com.example.playlist_maker.data.retrofit.TrackInternet
+import com.example.playlist_maker.data.retrofit.TreckResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

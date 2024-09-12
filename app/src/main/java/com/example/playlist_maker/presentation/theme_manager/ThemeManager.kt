@@ -1,4 +1,4 @@
-package com.example.playlist_maker.theme_manager
+package com.example.playlist_maker.presentation.theme_manager
 
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate

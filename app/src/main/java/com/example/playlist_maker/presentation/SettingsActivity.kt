@@ -1,11 +1,12 @@
-package com.example.playlist_maker
+package com.example.playlist_maker.presentation
 
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.playlist_maker.R
 import com.example.playlist_maker.databinding.ActivitySettingsBinding
-import com.example.playlist_maker.theme_manager.ThemeManager
+import com.example.playlist_maker.presentation.theme_manager.ThemeManager
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {

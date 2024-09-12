@@ -1,6 +1,6 @@
-package com.example.playlist_maker.retrofit
+package com.example.playlist_maker.data.retrofit
 
-import com.example.playlist_maker.Track
+import com.example.playlist_maker.domain.Track
 import com.google.gson.annotations.SerializedName
 
 
