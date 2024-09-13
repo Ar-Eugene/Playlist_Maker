@@ -16,22 +16,22 @@
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
         tools:targetApi="31">
         <activity
-            android:name=".presentation.PlayerActivity"
+            android:name=".ui.player.PlayerActivity"
             android:exported="false"
             android:theme="@style/Base.Theme.Playlist_Maker" />
         <activity
-            android:name=".presentation.SettingsActivity"
+            android:name=".ui.settings.SettingsActivity"
             android:exported="false"
             android:theme="@style/Base.Theme.Playlist_Maker" />
         <activity
-            android:name=".presentation.SearchActivity"
+            android:name=".ui.search.SearchActivity"
             android:exported="false"
             android:theme="@style/Base.Theme.Playlist_Maker" />
         <activity
-            android:name=".presentation.MediatecaActivity"
+            android:name=".ui.mediateca.MediatecaActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.MainActivity"
+            android:name=".ui.maker.MainActivity"
             android:exported="true"
             android:theme="@style/Base.Theme.Playlist_Maker">
             <intent-filter>

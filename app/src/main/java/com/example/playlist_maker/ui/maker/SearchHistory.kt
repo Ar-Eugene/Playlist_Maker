@@ -1,9 +1,9 @@
-package com.example.playlist_maker.presentation
+package com.example.playlist_maker.ui.maker
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import com.example.playlist_maker.constans.Constants
-import com.example.playlist_maker.domain.Track
+import com.example.playlist_maker.domain.models.Track
 import com.google.gson.Gson
 
 

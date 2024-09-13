@@ -1,4 +1,4 @@
-package com.example.playlist_maker.presentation
+package com.example.playlist_maker.ui.settings
 
 import android.content.Intent
 import android.net.Uri
