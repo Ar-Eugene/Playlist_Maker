@@ -12,5 +12,6 @@ interface TracksInteractor {
 // результатов поискового запроса, который будет выполняться в отдельном потоке
     interface TracksConsumer {
         fun consume(foundTracks: List<Track>)
+        fun onError(errorMessage: String)
     }
 }

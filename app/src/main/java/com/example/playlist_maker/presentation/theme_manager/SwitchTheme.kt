@@ -7,6 +7,4 @@ class SwitchTheme: Application() {
         super.onCreate()
         ThemeManager.applyTheme(this)
     }
-
-
 }

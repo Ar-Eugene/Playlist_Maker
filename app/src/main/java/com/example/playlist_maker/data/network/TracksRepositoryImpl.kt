@@ -8,11 +8,12 @@ import com.example.playlist_maker.domain.api.TracksRepository
 import com.example.playlist_maker.domain.models.Track
 
 // тут мы реализацием интерфейс TracksRepository
-class TracksRepositoryImpl(private val networkClient: NetworkClient) :TracksRepository {
+class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRepository {
     override fun searchTracks(term: String): List<Track> {
         val response = networkClient.doRequest(TracksSearchRequest(term))
         if (response.resultCode == 200) {
-            return (response as TracksSearchResponse).results.map {
+            val tracksResponse = response as? TracksSearchResponse
+            return tracksResponse?.results?.map {
                 Track(
                     it.trackName,
                     it.artistName,
@@ -22,10 +23,11 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient) :TracksRepo
                     it.collectionName,
                     it.primaryGenreName,
                     it.releaseDate,
-                    it.previewUrl)
-            }
-
-        } else
-            return emptyList()
+                    it.previewUrl
+                )
+            } ?: emptyList()
+        } else {
+            throw Exception("Ошибка сети: ${response.message}")
+        }
     }
 }

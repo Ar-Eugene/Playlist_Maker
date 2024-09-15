@@ -9,7 +9,6 @@ object ThemeManager {
         val sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREFERERNCES, Context.MODE_PRIVATE)
         return sharedPreferences.getBoolean(Constants.SEARCH_KEY, false)
     }
-
     fun applyTheme(context: Context) {
         val isDarkTheme = isDarkTheme(context)
         AppCompatDelegate.setDefaultNightMode(
@@ -20,7 +19,6 @@ object ThemeManager {
             }
         )
     }
-
     fun switchTheme(context: Context, darkThemeEnabled: Boolean) {
         val sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREFERERNCES, Context.MODE_PRIVATE)
         sharedPreferences.edit().putBoolean(Constants.SEARCH_KEY, darkThemeEnabled).apply()

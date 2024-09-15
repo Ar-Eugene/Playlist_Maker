@@ -15,12 +15,12 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ProgressBar
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.playlist_maker.Creator
 import com.example.playlist_maker.R
 import com.example.playlist_maker.domain.models.Track
 import com.example.playlist_maker.constans.Constants
 import com.example.playlist_maker.databinding.ActivitySearchBinding
-import com.example.playlist_maker.data.network.TrackInternet
-import com.example.playlist_maker.data.network.TreckResponse
+import com.example.playlist_maker.domain.api.TracksInteractor
 import com.example.playlist_maker.ui.maker.SearchHistory
 import com.example.playlist_maker.ui.maker.TrackAdapter
 import com.example.playlist_maker.ui.player.PlayerActivity
@@ -33,7 +33,7 @@ class SearchActivity : AppCompatActivity() {
     private var trackList = ArrayList<Track>()
     private val trackAdapter = TrackAdapter()
     private val historyAdapter = TrackAdapter()
-    private val trackApi = TrackInternet.trackApi
+    //private val trackApi = TrackInternet.trackApi
     private lateinit var historyTrackList: SearchHistory
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var binding: ActivitySearchBinding
@@ -42,6 +42,10 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var searchRunnable:Runnable
     private var isClickAllowed = true
     private lateinit var progressBar:ProgressBar
+    // Инициализация интерактора через Creator
+    private val interactor: TracksInteractor by lazy {
+        Creator.provideTracksInteractor()
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchBinding.inflate(layoutInflater)
@@ -159,17 +163,16 @@ class SearchActivity : AppCompatActivity() {
         binding.historyRecyclerView.adapter = historyAdapter
     }
 
+    // Метод для поиска через интерактор
     private fun search() {
         progressBar.visibility = View.VISIBLE
-        trackApi.getTrack(binding.inputEditText.text.toString())
-            .enqueue(object : Callback<TreckResponse> {
-                override fun onResponse(call: Call<TreckResponse>, response: Response<TreckResponse>) {
-                    progressBar.visibility = View.GONE // Прячем ProgressBar после успешного выполнения запроса
-                    if (response.code() == 200) {
-                        trackList.clear()
-                    }
-                    if (response.body()?.tracks?.isNotEmpty() == true) {
-                        trackList.addAll(response.body()?.tracks!!)
+        interactor.searchTracks(binding.inputEditText.text.toString(), object : TracksInteractor.TracksConsumer {
+            override fun consume(foundTracks: List<Track>) {
+                runOnUiThread {
+                    progressBar.visibility = View.GONE
+                    trackList.clear()
+                    if (foundTracks.isNotEmpty()) {
+                        trackList.addAll(foundTracks)
                         trackAdapter.notifyDataSetChanged()
                         binding.placeholderError.visibility = View.GONE
                         errorShown = false
@@ -178,12 +181,16 @@ class SearchActivity : AppCompatActivity() {
                         errorShown = true
                     }
                 }
-                override fun onFailure(call: Call<TreckResponse>, t: Throwable) {
-                    progressBar.visibility = View.GONE // Прячем ProgressBar после выполнения запроса с ошибкой
+            }
+
+            override fun onError(errorMessage: String) {
+                runOnUiThread {
+                    progressBar.visibility = View.GONE
                     showError(R.drawable.connection_problem, R.string.check_connection, true)
                     errorShown = true
                 }
-            })
+            }
+        })
     }
     // Функция обработки клика на трек (из поиска или истории)
     private fun handleTrackClick(track: Track, isFromHistory: Boolean = false) {
