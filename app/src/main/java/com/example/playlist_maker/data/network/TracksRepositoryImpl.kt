@@ -11,6 +11,12 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRep
     override fun searchTracks(term: String): List<Track> {
         val response = networkClient.doRequest(TracksSearchRequest(term))
         if (response is TracksSearchResponse) {
+            if (response.resultCode == -1) {
+                throw Exception(response.message ?: "Network error")
+            }
+            if (response.results.isEmpty()) {
+                return emptyList()
+            }
             return response.results.mapNotNull {
                 try {
                     Track(
@@ -29,7 +35,7 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRep
                 }
             }
         } else {
-            throw Exception("Неожиданный тип ответа: ${response::class.java.simpleName}")
+            throw Exception("Unexpected response type: ${response::class.java.simpleName}")
         }
     }
 }
