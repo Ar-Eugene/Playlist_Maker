@@ -9,6 +9,7 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -24,16 +25,13 @@ import com.example.playlist_maker.domain.api.TracksInteractor
 import com.example.playlist_maker.ui.maker.SearchHistory
 import com.example.playlist_maker.ui.maker.TrackAdapter
 import com.example.playlist_maker.ui.player.PlayerActivity
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+
 
 class SearchActivity : AppCompatActivity() {
     private var editTextContent: String? = null
     private var trackList = ArrayList<Track>()
     private val trackAdapter = TrackAdapter()
     private val historyAdapter = TrackAdapter()
-    //private val trackApi = TrackInternet.trackApi
     private lateinit var historyTrackList: SearchHistory
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var binding: ActivitySearchBinding
@@ -182,7 +180,6 @@ class SearchActivity : AppCompatActivity() {
                     }
                 }
             }
-
             override fun onError(errorMessage: String) {
                 runOnUiThread {
                     progressBar.visibility = View.GONE

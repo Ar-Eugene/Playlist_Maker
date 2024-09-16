@@ -1,16 +1,17 @@
 package com.example.playlist_maker.presentation.theme_manager
 
-import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
-import com.example.playlist_maker.constans.Constants
+import com.example.playlist_maker.Creator
 
 object ThemeManager {
-    fun isDarkTheme(context: Context): Boolean {
-        val sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREFERERNCES, Context.MODE_PRIVATE)
-        return sharedPreferences.getBoolean(Constants.SEARCH_KEY, false)
+    private val preferencesRepository: PreferencesRepository by lazy {
+        Creator.providePreferencesRepository()
     }
-    fun applyTheme(context: Context) {
-        val isDarkTheme = isDarkTheme(context)
+    fun isDarkTheme(): Boolean {
+        return preferencesRepository.isDarkTheme()
+    }
+    fun applyTheme() {
+        val isDarkTheme = isDarkTheme()
         AppCompatDelegate.setDefaultNightMode(
             if (isDarkTheme) {
                 AppCompatDelegate.MODE_NIGHT_YES
@@ -19,9 +20,8 @@ object ThemeManager {
             }
         )
     }
-    fun switchTheme(context: Context, darkThemeEnabled: Boolean) {
-        val sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREFERERNCES, Context.MODE_PRIVATE)
-        sharedPreferences.edit().putBoolean(Constants.SEARCH_KEY, darkThemeEnabled).apply()
-        applyTheme(context)
+    fun switchTheme(darkThemeEnabled: Boolean) {
+        preferencesRepository.setDarkTheme(darkThemeEnabled)
+        applyTheme()
     }
 }

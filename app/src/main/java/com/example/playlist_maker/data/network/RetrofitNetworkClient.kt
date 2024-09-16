@@ -1,16 +1,14 @@
 package com.example.playlist_maker.data.network
 
-import android.util.Log
 import com.example.playlist_maker.data.NetworkClient
 import com.example.playlist_maker.data.dto.Response
 import com.example.playlist_maker.data.dto.TracksSearchRequest
+import com.example.playlist_maker.data.dto.TracksSearchResponse
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.IOException
 
-class RetrofitNetworkClient :NetworkClient {
-
-    val retrofit= Retrofit.Builder()
+class RetrofitNetworkClient : NetworkClient {
+    private val retrofit = Retrofit.Builder()
         .baseUrl("https://itunes.apple.com")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
@@ -20,29 +18,34 @@ class RetrofitNetworkClient :NetworkClient {
         if (dto is TracksSearchRequest) {
             try {
                 val response = trackApi.getTrack(dto.term).execute()
-                if (response.isSuccessful) {
-                    val body = response.body() ?: Response()
-                    return body.apply { resultCode = response.code() }
+                return if (response.isSuccessful) {
+                    val body = response.body()
+                    if (body == null) {
+                        TracksSearchResponse(0, emptyList()).apply {
+                            resultCode = response.code()
+                            message = "Пустой ответ от сервера"
+                        }
+                    } else {
+                        body.apply {
+                            resultCode = response.code()
+                        }
+                    }
                 } else {
-                    return Response().apply { resultCode = response.code() }
-                }
-            } catch (e: IOException) {
-                val networkErrorMessage = e.message ?: "Network error occurred"
-                return Response().apply {
-                    resultCode = -1
-                    message = networkErrorMessage
+                    TracksSearchResponse(0, emptyList()).apply {
+                        resultCode = response.code()
+                        message = "HTTP ${response.code()}: ${response.message()}"
+                    }
                 }
             } catch (e: Exception) {
-                val generalErrorMessage = e.message ?: " Error occurred"
-                return Response().apply {
+                return TracksSearchResponse(0, emptyList()).apply {
                     resultCode = -1
-                    message = generalErrorMessage
+                    message = "Ошибка: ${e.message}"
                 }
             }
         } else {
-            return Response().apply {
+            return TracksSearchResponse(0, emptyList()).apply {
                 resultCode = 400
-                message = "Ошибка, dto не TracksSearchRequest"
+                message = "Неверный запрос: ожидался TracksSearchRequest"
             }
         }
     }

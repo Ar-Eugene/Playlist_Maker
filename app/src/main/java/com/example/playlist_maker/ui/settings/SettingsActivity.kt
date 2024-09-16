@@ -10,7 +10,7 @@ import com.example.playlist_maker.presentation.theme_manager.ThemeManager
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
-    private lateinit var binding:ActivitySettingsBinding
+    private lateinit var binding: ActivitySettingsBinding
     private lateinit var mySwitch: SwitchMaterial
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,13 +45,18 @@ class SettingsActivity : AppCompatActivity() {
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.URL_agreement)))
             startActivity(browserIntent)
         }
-        initializationSwith()
-        mySwitch.isChecked = ThemeManager.isDarkTheme(this)
-    }
-    private fun initializationSwith(){
-        mySwitch.setOnCheckedChangeListener{switcher, isChecked->
-            ThemeManager.switchTheme(this, isChecked)}
+        initializationSwitch()
+        mySwitch.isChecked = ThemeManager.isDarkTheme()
     }
 
-
+    private fun initializationSwitch() {
+        mySwitch.setOnCheckedChangeListener { _, isChecked ->
+            //Это предотвратит ненужное переключение темы, если текущее состояние переключателя уже соответствует текущей теме.
+            if (isChecked != ThemeManager.isDarkTheme()) {
+                ThemeManager.switchTheme(isChecked)
+                recreate()
+            }
+        }
+    }
 }
+
