@@ -10,22 +10,25 @@ import android.os.Looper
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlist_maker.R
-import com.example.playlist_maker.constans.Constants
 import com.example.playlist_maker.databinding.ActivityPlayerBinding
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-
+// константы для отслеживания состояние медиаплеера
+const val STATE_DEFAULT = 0
+const val STATE_PREPARED = 1
+const val STATE_PLAYING = 2
+const val STATE_PAUSED = 3
 class PlayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayerBinding
-    private var playerState = Constants.STATE_DEFAULT
+    private var playerState = STATE_DEFAULT
     private var mediaPlayer = MediaPlayer()
     private val mainHandler = Handler(Looper.getMainLooper())
 
     private val updateTimeRunnable = object : Runnable {
         override fun run() {
             //проверяет, воспроизводится ли в данный момент трек. Обновление времени происходит только тогда, когда трек играет.
-            if (playerState == Constants.STATE_PLAYING) {
+            if (playerState == STATE_PLAYING) {
                 val currentPosition = mediaPlayer.currentPosition //получает текущую позицию воспроизведения трека.
                 //преобразует текущую позицию из миллисекунд в строку формата "минуты:секунды" и
                 // обновляет TextView, чтобы отобразить текущее время воспроизведения.
@@ -88,10 +91,10 @@ class PlayerActivity : AppCompatActivity() {
         mediaPlayer.prepareAsync()//начинает асинхронную подготовку MediaPlayer, чтобы избежать блокировки основного потока.
         mediaPlayer.setOnPreparedListener {
             binding.playButton.isEnabled = true// включает кнопку воспроизведения, делая её активной для пользователя.
-            playerState = Constants.STATE_PREPARED//обновляет состояние плеера, указывая, что он готов к воспроизведению.
+            playerState = STATE_PREPARED//обновляет состояние плеера, указывая, что он готов к воспроизведению.
         }
         mediaPlayer.setOnCompletionListener {// устанавливает слушателя, который срабатывает, когда воспроизведение трека завершено.
-            playerState = Constants.STATE_PREPARED//сбрасывает состояние плеера.
+            playerState = STATE_PREPARED//сбрасывает состояние плеера.
             mainHandler.removeCallbacks(updateTimeRunnable)//останавливает обновление времени воспроизведения.
             binding.textTrackTimeValue.text = getString(R.string.current_time)
             binding.playButton.setImageResource(R.drawable.play_button)
@@ -100,22 +103,22 @@ class PlayerActivity : AppCompatActivity() {
     private fun startPlayer() {
         mediaPlayer.start()
         binding.playButton.setImageResource(R.drawable.pause_button)
-        playerState = Constants.STATE_PLAYING
+        playerState = STATE_PLAYING
         mainHandler.post(updateTimeRunnable)
     }
     private fun pausePlayer() {
         mediaPlayer.pause()
         binding.playButton.setImageResource(R.drawable.play_button)
-        playerState = Constants.STATE_PAUSED
+        playerState = STATE_PAUSED
         mainHandler.removeCallbacks(updateTimeRunnable)
     }
     // метод отвечает за управление воспроизведением аудиотрека в зависимости от текущего состояния плеера.
     private fun playbackControl() {
         when (playerState) {
-            Constants.STATE_PLAYING -> {
+            STATE_PLAYING -> {
                 pausePlayer()
             }
-            Constants.STATE_PREPARED, Constants.STATE_PAUSED -> {
+            STATE_PREPARED, STATE_PAUSED -> {
                 startPlayer()
             }
         }

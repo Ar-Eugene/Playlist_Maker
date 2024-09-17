@@ -1,6 +1,5 @@
 package com.example.playlist_maker.data.network
 
-import com.example.playlist_maker.data.NetworkClient
 import com.example.playlist_maker.data.dto.Response
 import com.example.playlist_maker.data.dto.TracksSearchRequest
 import com.example.playlist_maker.data.dto.TracksSearchResponse

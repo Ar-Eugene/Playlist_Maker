@@ -2,9 +2,10 @@ package com.example.playlist_maker.presentation.theme_manager
 
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.playlist_maker.Creator
+import com.example.playlist_maker.domain.api.ThemeRepository
 
 object ThemeManager {
-    private val preferencesRepository: PreferencesRepository by lazy {
+    private val preferencesRepository: ThemeRepository by lazy {
         Creator.providePreferencesRepository()
     }
     fun isDarkTheme(): Boolean {

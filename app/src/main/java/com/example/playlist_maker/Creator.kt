@@ -1,14 +1,21 @@
 package com.example.playlist_maker
 
 import android.content.Context
-import com.example.playlist_maker.data.SharedPreferencesRepository
+import android.content.SharedPreferences
+import com.example.playlist_maker.data.SearchHistoryRepositoryImpl
+import com.example.playlist_maker.data.SharedPreferencesRepositoryImpl
 import com.example.playlist_maker.data.network.RetrofitNetworkClient
-import com.example.playlist_maker.data.network.TracksRepositoryImpl
+import com.example.playlist_maker.data.TracksRepositoryImpl
 import com.example.playlist_maker.domain.api.TracksInteractor
 import com.example.playlist_maker.domain.api.TracksRepository
 import com.example.playlist_maker.domain.impl.TracksInteractorImpl
-import com.example.playlist_maker.presentation.theme_manager.PreferencesRepository
+import com.example.playlist_maker.domain.api.SearchHistoryRepository
+import com.example.playlist_maker.domain.api.ThemeRepository
 
+// для хранения темы
+const val SHARED_PREFERERNCES = "data_preferences"
+// для хранения истории треков
+const val HISTORY_TRACKLIST = "MY_TRACKS"
 object Creator {
     private lateinit var applicationContext: Context
 
@@ -26,7 +33,14 @@ object Creator {
         val repository = provideTracksRepository() // Получаем репозиторий через Creator
         return TracksInteractorImpl(repository)    // TracksInteractorImpl - реализация интерактора
     }
-    fun providePreferencesRepository(): PreferencesRepository {
-        return SharedPreferencesRepository(applicationContext)
+    fun providePreferencesRepository(): ThemeRepository {
+        return SharedPreferencesRepositoryImpl(provideSharedPrefs(SHARED_PREFERERNCES))
     }
+    fun provideSearchHistoryRepository(): SearchHistoryRepository {
+        return SearchHistoryRepositoryImpl(provideSharedPrefs(HISTORY_TRACKLIST))
+    }
+
+    private fun provideSharedPrefs(key: String): SharedPreferences =
+        applicationContext.getSharedPreferences(key, Context.MODE_PRIVATE)
+
 }

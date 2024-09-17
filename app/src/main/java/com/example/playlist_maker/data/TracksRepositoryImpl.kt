@@ -1,8 +1,8 @@
-package com.example.playlist_maker.data.network
+package com.example.playlist_maker.data
 
-import com.example.playlist_maker.data.NetworkClient
 import com.example.playlist_maker.data.dto.TracksSearchRequest
 import com.example.playlist_maker.data.dto.TracksSearchResponse
+import com.example.playlist_maker.data.network.NetworkClient
 import com.example.playlist_maker.domain.api.TracksRepository
 import com.example.playlist_maker.domain.models.Track
 
