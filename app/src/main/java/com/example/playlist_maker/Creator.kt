@@ -12,13 +12,14 @@ import com.example.playlist_maker.domain.impl.TracksInteractorImpl
 import com.example.playlist_maker.domain.api.SearchHistoryRepository
 import com.example.playlist_maker.domain.api.ThemeRepository
 
-// для хранения темы
-const val SHARED_PREFERERNCES = "data_preferences"
-// для хранения истории треков
-const val HISTORY_TRACKLIST = "MY_TRACKS"
-object Creator {
-    private lateinit var applicationContext: Context
 
+object Creator {
+    // для хранения темы
+    private const val SHARED_PREFERERNCES = "data_preferences"
+    // для хранения истории треков
+    private const val HISTORY_TRACKLIST = "MY_TRACKS"
+
+    private lateinit var applicationContext: Context
     fun init(context: Context) {
         applicationContext = context.applicationContext
     }

@@ -5,8 +5,6 @@ import com.example.playlist_maker.domain.api.SearchHistoryRepository
 import com.example.playlist_maker.domain.models.Track
 import com.google.gson.Gson
 
-// для json преобразования
-const val TRACKLIST_HISTORY = "TRACKLIST_HISTORY"
 class SearchHistoryRepositoryImpl(private val sharedPreferences: SharedPreferences
 ) : SearchHistoryRepository {
 
@@ -44,4 +42,8 @@ class SearchHistoryRepositoryImpl(private val sharedPreferences: SharedPreferenc
 
     private fun Array<Track>.fromTracklistToJson(): String =
         gson.toJson(this)
+    private companion object{
+        // для json преобразования
+        const val TRACKLIST_HISTORY = "TRACKLIST_HISTORY"
+    }
 }

@@ -1,4 +1,4 @@
-package com.example.playlist_maker.ui.search
+package com.example.playlist_maker.presentation.ui.search
 
 import android.content.Context
 import android.content.Intent
@@ -20,16 +20,12 @@ import com.example.playlist_maker.domain.models.Track
 import com.example.playlist_maker.databinding.ActivitySearchBinding
 import com.example.playlist_maker.domain.api.SearchHistoryRepository
 import com.example.playlist_maker.domain.api.TracksInteractor
-import com.example.playlist_maker.ui.maker.TrackAdapter
-import com.example.playlist_maker.ui.player.PlayerActivity
+import com.example.playlist_maker.presentation.ui.maker.TrackAdapter
+import com.example.playlist_maker.presentation.ui.player.PlayerActivity
 
-// для хранения времения отклика
-const val SEARCH_DEBOUNCE_DELAY = 2000L
-// для хранения задержки отклика от пользователя
-const val CLICK_DEBOUNCE_DELAY = 1000L
-// кажется это для хранения передачи данных между поиском и медиаплеером
-const val REQUEST_CODE_PLAYER = 1
+
 class SearchActivity : AppCompatActivity() {
+
     private lateinit var searchHistoryRepository: SearchHistoryRepository
     private lateinit var interactor: TracksInteractor
     private lateinit var binding: ActivitySearchBinding
@@ -222,7 +218,7 @@ class SearchActivity : AppCompatActivity() {
             putExtra("releaseDate", track.releaseDate)
             putExtra("isFromHistory", isFromHistory) // Добавляем флаг
         }
-        startActivityForResult(intent,REQUEST_CODE_PLAYER)
+        startActivityForResult(intent, REQUEST_CODE_PLAYER)
     }
 
     private fun updateHistoryRecyclerView() {
@@ -284,6 +280,15 @@ class SearchActivity : AppCompatActivity() {
                 showHistory()
             }
         }
+    }
+
+    private companion object{
+        // для хранения времения отклика
+        const val SEARCH_DEBOUNCE_DELAY = 2000L
+        // для хранения задержки отклика от пользователя
+        const val CLICK_DEBOUNCE_DELAY = 1000L
+        // кажется это для хранения передачи данных между поиском и медиаплеером
+        const val REQUEST_CODE_PLAYER = 1
     }
 }
 

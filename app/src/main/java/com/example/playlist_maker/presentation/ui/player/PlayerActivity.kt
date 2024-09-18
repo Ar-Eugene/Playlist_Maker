@@ -1,4 +1,4 @@
-package com.example.playlist_maker.ui.player
+package com.example.playlist_maker.presentation.ui.player
 
 
 import android.content.Intent
@@ -14,11 +14,7 @@ import com.example.playlist_maker.databinding.ActivityPlayerBinding
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-// константы для отслеживания состояние медиаплеера
-const val STATE_DEFAULT = 0
-const val STATE_PREPARED = 1
-const val STATE_PLAYING = 2
-const val STATE_PAUSED = 3
+
 class PlayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayerBinding
     private var playerState = STATE_DEFAULT
@@ -141,5 +137,13 @@ class PlayerActivity : AppCompatActivity() {
             setResult(RESULT_OK, resultIntent)
             finish()
         }
+    }
+
+    private companion object{
+        // константы для отслеживания состояние медиаплеера
+        const val STATE_DEFAULT = 0
+        const val STATE_PREPARED = 1
+        const val STATE_PLAYING = 2
+        const val STATE_PAUSED = 3
     }
 }

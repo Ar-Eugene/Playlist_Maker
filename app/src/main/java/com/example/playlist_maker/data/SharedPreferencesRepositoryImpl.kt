@@ -3,8 +3,7 @@ package com.example.playlist_maker.data
 import android.content.SharedPreferences
 import com.example.playlist_maker.domain.api.ThemeRepository
 
-// ключ для хранения темы
-const val SEARCH_KEY = "key_for_shared"
+
 class SharedPreferencesRepositoryImpl(private val sharedPreferences: SharedPreferences) :
     ThemeRepository {
 
@@ -14,5 +13,10 @@ class SharedPreferencesRepositoryImpl(private val sharedPreferences: SharedPrefe
 
     override fun setDarkTheme(isDark: Boolean) {
         sharedPreferences.edit().putBoolean(SEARCH_KEY, isDark).apply()
+    }
+
+    private companion object{
+        // ключ для хранения темы
+        const val SEARCH_KEY = "key_for_shared"
     }
 }
