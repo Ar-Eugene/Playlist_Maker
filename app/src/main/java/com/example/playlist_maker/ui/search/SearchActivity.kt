@@ -171,6 +171,9 @@ class SearchActivity : AppCompatActivity() {
 
     // Метод для поиска через интерактор
     private fun search() {
+        // Очистка предыдущих результатов
+        trackList.clear()
+        trackAdapter.notifyDataSetChanged() // Уведомляем адаптер об обновлении представления
         progressBar.visibility = View.VISIBLE
         interactor.searchTracks(
             binding.inputEditText.text.toString(),
@@ -180,8 +183,8 @@ class SearchActivity : AppCompatActivity() {
                         progressBar.visibility = View.GONE
                         trackList.clear()
                         if (foundTracks.isNotEmpty()) {
-                            trackList.addAll(foundTracks)
-                            trackAdapter.notifyDataSetChanged()
+                            trackList.addAll(foundTracks)// Добавляем новые результаты
+                            trackAdapter.notifyDataSetChanged() // Уведомляем адаптер об обновлении представления
                             binding.placeholderError.visibility = View.GONE
                             errorShown = false
                         } else {
