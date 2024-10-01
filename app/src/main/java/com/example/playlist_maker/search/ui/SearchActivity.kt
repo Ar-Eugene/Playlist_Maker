@@ -1,4 +1,4 @@
-package com.example.playlist_maker.presentation.ui.search
+package com.example.playlist_maker.search.ui
 
 import android.content.Context
 import android.content.Intent
@@ -8,46 +8,54 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ProgressBar
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.playlist_maker.Creator
+import com.example.playlist_maker.creator.Creator
 import com.example.playlist_maker.R
-import com.example.playlist_maker.domain.models.Track
+import com.example.playlist_maker.search.domain.models.Track
 import com.example.playlist_maker.databinding.ActivitySearchBinding
-import com.example.playlist_maker.domain.api.SearchHistoryRepository
-import com.example.playlist_maker.domain.api.TracksInteractor
-import com.example.playlist_maker.presentation.ui.maker.TrackAdapter
-import com.example.playlist_maker.presentation.ui.player.PlayerActivity
+import com.example.playlist_maker.search.domain.repository.SearchHistoryRepository
+import com.example.playlist_maker.search.domain.interactor.TracksInteractor
+import com.example.playlist_maker.player.ui.PlayerActivity
+import com.example.playlist_maker.search.ui.view_model.SearchViewModel
+import com.example.playlist_maker.search.ui.view_model.SearchViewModelFactory
 
 
 class SearchActivity : AppCompatActivity() {
-
     private lateinit var searchHistoryRepository: SearchHistoryRepository
     private lateinit var interactor: TracksInteractor
     private lateinit var binding: ActivitySearchBinding
     private lateinit var handler: Handler
     private lateinit var searchRunnable: Runnable
     private lateinit var progressBar: ProgressBar
-
     private var editTextContent: String? = null
     private var trackList = ArrayList<Track>()
     private val trackAdapter = TrackAdapter()
     private val historyAdapter = TrackAdapter()
     private var errorShown = false // Флаг, показан ли placeholderError после последнего запроса
     private var isClickAllowed = true
+    private lateinit var viewModel: SearchViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         interactor = Creator.provideTracksInteractor()
         searchHistoryRepository = Creator.provideSearchHistoryRepository()
 
+
+        // Инициализируем ViewModel через фабрику
+        viewModel = ViewModelProvider(this, SearchViewModelFactory(interactor, searchHistoryRepository))
+            .get(SearchViewModel::class.java)
+
+        // Подписываемся на обновления данных из ViewModel
+        observeViewModel()
 
         val inputEditText = binding.inputEditText
         val clearButton = binding.clearIcon
@@ -55,6 +63,7 @@ class SearchActivity : AppCompatActivity() {
         progressBar.visibility = View.GONE
         handler = Handler(Looper.getMainLooper())
         searchRunnable = Runnable { search() }
+
 
         // Настраиваем click listener для адаптера поиска
         trackAdapter.onClickedTrack = { track ->
@@ -65,8 +74,7 @@ class SearchActivity : AppCompatActivity() {
             handleTrackClick(track, true)
         }
         binding.buttonClearHistory.setOnClickListener {
-            searchHistoryRepository.clearSearchHistory()
-            updateHistoryRecyclerView()
+            viewModel.clearHistory() // Вызываем очистку истории через ViewModel
         }
         val backArrowplayButton = binding.backArrow
         backArrowplayButton.setOnClickListener {
@@ -82,11 +90,12 @@ class SearchActivity : AppCompatActivity() {
             binding.placeholderError.visibility = View.GONE
             errorShown = false
         }
+
+        // Обработка ввода текста
         inputEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 // empty
             }
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 editTextContent = s.toString()
                 clearButton.visibility = if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
@@ -128,12 +137,14 @@ class SearchActivity : AppCompatActivity() {
             search()
         }
 
+
         if
                 (inputEditText.text.isEmpty() && !inputEditText.hasFocus()) {
             hideHistory()
         }
         clickDebounce()
         buildRecyclerView()
+
 
     }
 
@@ -144,6 +155,7 @@ class SearchActivity : AppCompatActivity() {
             handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
         }
     }
+
 
     // метод, отвечающий за то, что после каждого нажатия будет задержка в 1 сек, чтобы пользователь не нажал еще раз и не было бага
     private fun clickDebounce(): Boolean {
@@ -160,45 +172,18 @@ class SearchActivity : AppCompatActivity() {
         trackAdapter.trackList = trackList
         binding.recyclerView.adapter = trackAdapter
 
+
         historyAdapter.trackList = ArrayList(searchHistoryRepository.getSearchHistory())
         binding.historyRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.historyRecyclerView.adapter = historyAdapter
     }
 
+
     // Метод для поиска через интерактор
     private fun search() {
-        // Очистка предыдущих результатов
-        trackList.clear()
-        trackAdapter.notifyDataSetChanged() // Уведомляем адаптер об обновлении представления
-        progressBar.visibility = View.VISIBLE
-        interactor.searchTracks(
-            binding.inputEditText.text.toString(),
-            object : TracksInteractor.TracksConsumer {
-                override fun consume(foundTracks: List<Track>) {
-                    runOnUiThread {
-                        progressBar.visibility = View.GONE
-                        trackList.clear()
-                        if (foundTracks.isNotEmpty()) {
-                            trackList.addAll(foundTracks)// Добавляем новые результаты
-                            trackAdapter.notifyDataSetChanged() // Уведомляем адаптер об обновлении представления
-                            binding.placeholderError.visibility = View.GONE
-                            errorShown = false
-                        } else {
-                            showError(R.drawable.search_error, R.string.nothing_found, false)
-                            errorShown = true
-                        }
-                    }
-                }
-
-                override fun onError(errorMessage: String) {
-                    runOnUiThread {
-                        progressBar.visibility = View.GONE
-                        showError(R.drawable.connection_problem, R.string.check_connection, true)
-                        errorShown = true
-                    }
-                }
-            })
+        viewModel.search(binding.inputEditText.text.toString())
     }
+
 
     // Функция обработки клика на трек (из поиска или истории)
     private fun handleTrackClick(track: Track, isFromHistory: Boolean = false) {
@@ -221,6 +206,7 @@ class SearchActivity : AppCompatActivity() {
         startActivityForResult(intent, REQUEST_CODE_PLAYER)
     }
 
+
     private fun updateHistoryRecyclerView() {
         historyAdapter.trackList = ArrayList(searchHistoryRepository.getSearchHistory())
         historyAdapter.notifyDataSetChanged()
@@ -229,6 +215,7 @@ class SearchActivity : AppCompatActivity() {
         binding.historyLayout.visibility =
             if (isHistoryEmpty || binding.inputEditText.hasFocus()) View.GONE else View.VISIBLE
     }
+
 
     private fun showError(imageResId: Int, messageResId: Int, showRefreshButton: Boolean) {
         trackList.clear()
@@ -240,6 +227,7 @@ class SearchActivity : AppCompatActivity() {
         errorShown = true
     }
 
+
     private fun hideKeyboard() {
         val inputMethodManager =
             getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -247,6 +235,7 @@ class SearchActivity : AppCompatActivity() {
             inputMethodManager.hideSoftInputFromWindow(it.windowToken, 0)
         }
     }
+
 
     private fun showHistory() {
         if (historyAdapter.trackList.isNotEmpty()) {
@@ -256,20 +245,24 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
+
     private fun hideHistory() {
         binding.historyLayout.visibility = View.GONE
     }
+
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(getString(R.string.EDIT_TEXT_CONTENT), editTextContent)
     }
 
+
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         editTextContent = savedInstanceState.getString(getString(R.string.EDIT_TEXT_CONTENT))
         findViewById<EditText>(R.id.inputEditText).setText(editTextContent)
     }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -281,9 +274,42 @@ class SearchActivity : AppCompatActivity() {
             }
         }
     }
+    private fun observeViewModel() {
+        viewModel.tracks.observe(this) { tracks ->
+            trackList.clear()
+            if (tracks.isNotEmpty()) {
+                trackList.addAll(tracks)
+                trackAdapter.notifyDataSetChanged()
+                binding.placeholderError.visibility = View.GONE
+                errorShown = false
+            } else {
+                showError(R.drawable.search_error, R.string.nothing_found, false)
+                errorShown = true
+            }
+        }
+
+
+        viewModel.isLoading.observe(this) { isLoading ->
+            progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        }
+
+
+        viewModel.error.observe(this) { errorMessage ->
+            showError(R.drawable.connection_problem, R.string.check_connection, true)
+            errorShown = true
+        }
+
+
+        viewModel.history.observe(this) { history ->
+            historyAdapter.trackList = ArrayList(history)
+            historyAdapter.notifyDataSetChanged()
+            showHistory()
+        }
+    }
+
 
     private companion object{
-        // для хранения времения отклика
+        // для хранения времени отклика
         const val SEARCH_DEBOUNCE_DELAY = 2000L
         // для хранения задержки отклика от пользователя
         const val CLICK_DEBOUNCE_DELAY = 1000L
@@ -292,9 +318,11 @@ class SearchActivity : AppCompatActivity() {
     }
 }
 
+
 fun dpToPx(dp: Float, context: Context): Int {
     return TypedValue.applyDimension(
         TypedValue.COMPLEX_UNIT_DIP,
         dp,
         context.resources.displayMetrics).toInt()
 }
+
