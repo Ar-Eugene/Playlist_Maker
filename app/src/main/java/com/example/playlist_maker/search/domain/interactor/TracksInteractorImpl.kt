@@ -11,13 +11,15 @@ class TracksInteractorImpl(private val repository: TracksRepository) : TracksInt
             try {
                 val tracks = repository.searchTracks(term)
                 if (tracks.isEmpty()) {
-                    consumer.consume(emptyList())
+                   throw EmptyListException()
                 } else {
                     consumer.consume(tracks)
                 }
             } catch (e: Exception) {
-                consumer.onError(e.message ?: "Unknown error")
+                consumer.onError(e)
             }
         }
     }
 }
+
+class EmptyListException: Exception()
