@@ -2,6 +2,7 @@ package com.example.playlist_maker.creator
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.example.playlist_maker.player.ui.MediaPlayerManager
 import com.example.playlist_maker.search.data.repository.SearchHistoryRepositoryImpl
 import com.example.playlist_maker.settings.data.repository.ThemeRepositoryImpl
 import com.example.playlist_maker.search.data.network.RetrofitNetworkClient
@@ -51,5 +52,9 @@ object Creator {
 
     private fun provideSharedPrefs(key: String): SharedPreferences =
         applicationContext.getSharedPreferences(key, Context.MODE_PRIVATE)
+
+    fun provideMediaPlayerManager(): MediaPlayerManager {
+        return MediaPlayerManager()
+    }
 
 }

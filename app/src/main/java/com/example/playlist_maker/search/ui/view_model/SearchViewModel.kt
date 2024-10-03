@@ -34,9 +34,6 @@ class SearchViewModel(
     private val _history = MutableLiveData<List<Track>>()
     val history: LiveData<List<Track>> = _history
 
-//    private val _isShowingSearchResults = MutableLiveData<Boolean>()
-//    val isShowingSearchResults: LiveData<Boolean> = _isShowingSearchResults
-
     fun search(query: String) {
         _error.postValue(null)
         _isLoading.value = true

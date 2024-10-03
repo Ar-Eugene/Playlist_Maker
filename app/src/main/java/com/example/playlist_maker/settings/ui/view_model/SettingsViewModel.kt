@@ -3,24 +3,18 @@ package com.example.playlist_maker.settings.ui.view_model
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.playlist_maker.R
 import com.example.playlist_maker.settings.domain.theme.repository.ThemeRepository
 
 class SettingsViewModel(private val themeRepository: ThemeRepository) : ViewModel() {
 
-    private val _darkTheme = MutableLiveData<Boolean>()
-    val darkTheme: LiveData<Boolean> get() = _darkTheme
-
-    init {
-        _darkTheme.value = themeRepository.isDarkTheme()
-    }
-
     fun toggleTheme(isDark: Boolean) {
         themeRepository.setDarkTheme(isDark)
-        _darkTheme.value = isDark
+    }
+
+    fun isDarkTheme(): Boolean {
+        return themeRepository.isDarkTheme()
     }
 
     fun getShareIntent(context: Context): Intent {
@@ -41,7 +35,6 @@ class SettingsViewModel(private val themeRepository: ThemeRepository) : ViewMode
 
     fun getAgreementIntent(context: Context): Intent {
         return Intent(Intent.ACTION_VIEW, Uri.parse(context.getString(R.string.URL_agreement)))
-
     }
 
 }

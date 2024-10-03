@@ -8,11 +8,9 @@ object ThemeManager {
     private val preferencesRepository: ThemeRepository by lazy {
         Creator.providePreferencesRepository()
     }
-    fun isDarkTheme(): Boolean {
-        return preferencesRepository.isDarkTheme()
-    }
+
     fun applyTheme() {
-        val isDarkTheme = isDarkTheme()
+        val isDarkTheme = preferencesRepository.isDarkTheme()
         AppCompatDelegate.setDefaultNightMode(
             if (isDarkTheme) {
                 AppCompatDelegate.MODE_NIGHT_YES

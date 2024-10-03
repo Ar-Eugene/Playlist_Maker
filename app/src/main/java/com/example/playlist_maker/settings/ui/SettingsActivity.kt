@@ -44,19 +44,16 @@ class SettingsActivity : AppCompatActivity() {
         }
         initializationSwitch()
 
-        mySwitch.isChecked = ThemeManager.isDarkTheme()
+        mySwitch.isChecked = viewModel.isDarkTheme()
 
-        viewModel.darkTheme.observe(this) { isDark ->
-            mySwitch.isChecked
-            ThemeManager.applyTheme()// Применяем тему при изменении состояния
-        }
     }
 
     private fun initializationSwitch() {
         mySwitch.setOnCheckedChangeListener { _, isChecked ->
             //Это предотвратит ненужное переключение темы, если текущее состояние переключателя уже соответствует текущей теме.
-            if (isChecked != ThemeManager.isDarkTheme()) {
+            if (isChecked != viewModel.isDarkTheme()) {
                 viewModel.toggleTheme(isChecked)
+                ThemeManager.applyTheme()// Применяем тему при изменении состояния
                 recreate()
             }
         }
