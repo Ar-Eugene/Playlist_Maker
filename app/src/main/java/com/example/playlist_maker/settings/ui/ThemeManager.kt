@@ -21,8 +21,4 @@ object ThemeManager {
             }
         )
     }
-    fun switchTheme(darkThemeEnabled: Boolean) {
-        preferencesRepository.setDarkTheme(darkThemeEnabled)
-        applyTheme()
-    }
 }

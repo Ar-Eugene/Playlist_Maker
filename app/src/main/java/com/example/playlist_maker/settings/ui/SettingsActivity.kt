@@ -1,58 +1,62 @@
 package com.example.playlist_maker.settings.ui
 
-import android.content.Intent
-import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.playlist_maker.R
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import com.example.playlist_maker.creator.Creator
 import com.example.playlist_maker.databinding.ActivitySettingsBinding
+import com.example.playlist_maker.settings.ui.view_model.SettingsViewModel
+import com.example.playlist_maker.settings.ui.view_model.SettingsViewModelFactory
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySettingsBinding
     private lateinit var mySwitch: SwitchMaterial
+    private lateinit var viewModel: SettingsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val themeRepository =
+            Creator.providePreferencesRepository() // Получаем репозиторий через Creator
+
+        val factory = SettingsViewModelFactory(themeRepository)
+        viewModel = ViewModelProvider(this, factory).get(SettingsViewModel::class.java)
 
         mySwitch = binding.mySwitch
         val backArrowplayButton = binding.backArrow
-        backArrowplayButton.setOnClickListener {
-            finish()
-        }
+        backArrowplayButton.setOnClickListener { finish() }
+
         val shareAppImageView = binding.share
         shareAppImageView.setOnClickListener {
-            startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
-                type = getString(R.string.text_plain)
-                putExtra(Intent.EXTRA_TEXT, getString(R.string.URL_Android_developer))
-            }, getString(R.string.share_app)))
+            startActivity(viewModel.getShareIntent(this))
         }
+
         val writeToSupportImageView = binding.writeToSupport
         writeToSupportImageView.setOnClickListener {
-            val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
-                data = Uri.parse(getString(R.string.mailto))
-                putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.my_email)))
-                putExtra(Intent.EXTRA_SUBJECT, getString(R.string.letter_subject))
-                putExtra(Intent.EXTRA_TEXT, getString(R.string.thanksToTheDevelopers))
-            }
-            startActivity(emailIntent)
+            startActivity(viewModel.getEmailIntent(this))
         }
+
         val agreementImageView = binding.agreementLayout
         agreementImageView.setOnClickListener {
-            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.URL_agreement)))
-            startActivity(browserIntent)
+            startActivity(viewModel.getAgreementIntent(this))
         }
         initializationSwitch()
+
         mySwitch.isChecked = ThemeManager.isDarkTheme()
+
+        viewModel.darkTheme.observe(this) { isDark ->
+            mySwitch.isChecked
+            ThemeManager.applyTheme()// Применяем тему при изменении состояния
+        }
     }
 
     private fun initializationSwitch() {
         mySwitch.setOnCheckedChangeListener { _, isChecked ->
             //Это предотвратит ненужное переключение темы, если текущее состояние переключателя уже соответствует текущей теме.
             if (isChecked != ThemeManager.isDarkTheme()) {
-                ThemeManager.switchTheme(isChecked)
+                viewModel.toggleTheme(isChecked)
                 recreate()
             }
         }

@@ -214,9 +214,6 @@ class SearchActivity : AppCompatActivity() {
             trackList.clear()
             trackList.addAll(tracks)
             trackAdapter.notifyDataSetChanged()
-//            if (tracks.isNotEmpty()) {
-//                binding.historyLayout.visibility = View.GONE
-//            }
         }
 
         viewModel.isLoading.observe(this) { isLoading ->
@@ -227,7 +224,7 @@ class SearchActivity : AppCompatActivity() {
             } else {
             binding.recyclerView.visibility = View.VISIBLE
             progressBar.visibility = View.GONE
-        }
+            }
         }
 
         viewModel.error.observe(this) { error ->
@@ -244,10 +241,8 @@ class SearchActivity : AppCompatActivity() {
             // Скрываем historyLayout, если нет данных или EditText в фокусе
             binding.historyLayout.visibility =
                 if (history.isEmpty() || !binding.inputEditText.hasFocus()) View.GONE else View.VISIBLE
-
         }
     }
-
     private companion object {
         // для хранения времени отклика
         const val SEARCH_DEBOUNCE_DELAY = 2000L
