@@ -36,7 +36,8 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         // Получаем переданные данные
-        val track = intent.getSerializableExtra(EXTRA_TRACK) as? Track ?: return  // Используем getSerializableExtra
+        val track = intent.getSerializableExtra(EXTRA_TRACK) as? Track
+            ?: return  // Используем getSerializableExtra
         val isFromHistory = intent.getBooleanExtra(EXTRA_IS_FROM_HISTORY, false)
 
         // Установка значений на экран
@@ -78,7 +79,7 @@ class PlayerActivity : AppCompatActivity() {
     override fun onBackPressed() {
         val isFromHistory = intent.getBooleanExtra(EXTRA_IS_FROM_HISTORY, false)
         val resultIntent = Intent().apply {
-            putExtra("isFromHistory", isFromHistory)
+            putExtra(EXTRA_IS_FROM_HISTORY, isFromHistory)
         }
         setResult(RESULT_OK, resultIntent)
         super.onBackPressed()
@@ -118,6 +119,7 @@ class PlayerActivity : AppCompatActivity() {
             }
         }
     }
+
     private companion object {
         const val EXTRA_TRACK = "track"
         const val EXTRA_IS_FROM_HISTORY = "isFromHistory"
