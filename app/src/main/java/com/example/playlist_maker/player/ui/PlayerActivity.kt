@@ -11,6 +11,7 @@ import com.example.playlist_maker.creator.Creator
 import com.example.playlist_maker.databinding.ActivityPlayerBinding
 import com.example.playlist_maker.player.ui.view_model.PlayerViewModel
 import com.example.playlist_maker.player.ui.view_model.PlayerViewModelFactory
+import com.example.playlist_maker.search.domain.models.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -35,30 +36,23 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         // Получаем переданные данные
-        val previewUrl = intent.getStringExtra("previewUrl") ?: return
-        val trackName = intent.getStringExtra("trackName")
-        val artistName = intent.getStringExtra("artistName")
-        val trackTimeMillis = intent.getLongExtra("trackTimeMillis", 0)
-        val artworkUrl100 = intent.getStringExtra("artworkUrl100")
-        val country = intent.getStringExtra("country")
-        val collectionName = intent.getStringExtra("collectionName")
-        val primaryGenreName = intent.getStringExtra("primaryGenreName")
-        val releaseDate = intent.getStringExtra("releaseDate")
+        val track = intent.getSerializableExtra(EXTRA_TRACK) as? Track ?: return  // Используем getSerializableExtra
+        val isFromHistory = intent.getBooleanExtra(EXTRA_IS_FROM_HISTORY, false)
 
         // Установка значений на экран
-        binding.trackName.text = trackName
-        binding.trackArtist.text = artistName
+        binding.trackName.text = track.trackName
+        binding.trackArtist.text = track.artistName
         binding.textDurationValue.text =
-            SimpleDateFormat("mm:ss", Locale.getDefault()).format(trackTimeMillis)
-        val artworkUrl512 = artworkUrl100?.replaceAfterLast("/", "512x512bb.jpg")
+            SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis)
+        val artworkUrl512 = track.artworkUrl100.replaceAfterLast("/", "512x512bb.jpg")
         Glide.with(this)
             .load(artworkUrl512)
             .placeholder(R.drawable.error_image)
             .error(R.drawable.error_image)
             .transform(RoundedCorners(20))
             .into(binding.albumPosterImage)
-        binding.textCountryValue.text = country
-        binding.textGenreValue.text = primaryGenreName
+        binding.textCountryValue.text = track.country
+        binding.textGenreValue.text = track.primaryGenreName
         binding.textYearValue.text = SimpleDateFormat(
             "yyyy",
             Locale.getDefault()
@@ -66,11 +60,11 @@ class PlayerActivity : AppCompatActivity() {
             SimpleDateFormat(
                 "yyyy-MM-dd'T'HH:mm:ss'Z'",
                 Locale.getDefault()
-            ).parse(releaseDate)!!
+            ).parse(track.releaseDate)!!
         )
-        binding.textAlbumValue.text = collectionName
+        binding.textAlbumValue.text = track.collectionName
 
-        playerViewModel.preparePlayer(previewUrl)
+        playerViewModel.preparePlayer(track.previewUrl)
         // Возвращаемся на экран "Поиск"
         backArrowButton()
     }
@@ -82,7 +76,7 @@ class PlayerActivity : AppCompatActivity() {
 
     //отвечает за подготовку MediaPlayer для воспроизведения аудиотрека.
     override fun onBackPressed() {
-        val isFromHistory = intent.getBooleanExtra("isFromHistory", false)
+        val isFromHistory = intent.getBooleanExtra(EXTRA_IS_FROM_HISTORY, false)
         val resultIntent = Intent().apply {
             putExtra("isFromHistory", isFromHistory)
         }
@@ -93,9 +87,9 @@ class PlayerActivity : AppCompatActivity() {
     private fun backArrowButton() {
         val backArrowPlayButton = binding.backArrow
         backArrowPlayButton.setOnClickListener {
-            val isFromHistory = intent.getBooleanExtra("isFromHistory", false)
+            val isFromHistory = intent.getBooleanExtra(EXTRA_IS_FROM_HISTORY, false)
             val resultIntent = Intent().apply {
-                putExtra("isFromHistory", isFromHistory)
+                putExtra(EXTRA_IS_FROM_HISTORY, isFromHistory)
             }
             setResult(RESULT_OK, resultIntent)
             finish()
@@ -123,5 +117,9 @@ class PlayerActivity : AppCompatActivity() {
                 binding.playButton.setImageResource(R.drawable.play_button)
             }
         }
+    }
+    private companion object {
+        const val EXTRA_TRACK = "track"
+        const val EXTRA_IS_FROM_HISTORY = "isFromHistory"
     }
 }

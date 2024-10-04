@@ -155,16 +155,8 @@ class SearchActivity : AppCompatActivity() {
         hideHistory()
         // Переход в PlayerActivity
         val intent = Intent(this, PlayerActivity::class.java).apply {
-            putExtra("previewUrl", track.previewUrl)
-            putExtra("trackName", track.trackName)
-            putExtra("artistName", track.artistName)
-            putExtra("trackTimeMillis", track.trackTimeMillis)
-            putExtra("artworkUrl100", track.artworkUrl100)
-            putExtra("country", track.country)
-            putExtra("collectionName", track.collectionName)
-            putExtra("primaryGenreName", track.primaryGenreName)
-            putExtra("releaseDate", track.releaseDate)
-            putExtra("isFromHistory", isFromHistory) // Добавляем флаг
+            putExtra(EXTRA_TRACK, track)  // Передаем объект Track, который реализует Serializable
+            putExtra(EXTRA_IS_FROM_HISTORY, isFromHistory)  // Передаем флаг
         }
         startActivityForResult(intent, REQUEST_CODE_PLAYER)
     }
@@ -202,7 +194,7 @@ class SearchActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_PLAYER && resultCode == RESULT_OK) {
-            val isFromHistory = data?.getBooleanExtra("isFromHistory", false) ?: false
+            val isFromHistory = data?.getBooleanExtra(EXTRA_IS_FROM_HISTORY, false) ?: false
             if (isFromHistory) {
                 viewModel.updateHistory()
             }
@@ -252,5 +244,8 @@ class SearchActivity : AppCompatActivity() {
 
         // кажется это для хранения передачи данных между поиском и медиаплеером
         const val REQUEST_CODE_PLAYER = 1
+
+        const val EXTRA_TRACK = "track"
+        const val EXTRA_IS_FROM_HISTORY = "isFromHistory"
     }
 }
