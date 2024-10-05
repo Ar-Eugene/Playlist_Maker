@@ -1,4 +1,4 @@
-package com.example.playlist_maker.settings.domain.theme.repository
+package com.example.playlist_maker.common
 
 interface ThemeRepository {
     fun isDarkTheme(): Boolean

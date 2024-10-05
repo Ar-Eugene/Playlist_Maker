@@ -1,6 +1,6 @@
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.playlist_maker.settings.domain.theme.interactor.ThemeInteractor
+import com.example.playlist_maker.common.ThemeInteractor
 
 class MainViewModelFactory(private val themeInteractor: ThemeInteractor) :
     ViewModelProvider.Factory {

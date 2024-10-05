@@ -2,7 +2,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.playlist_maker.settings.domain.theme.interactor.ThemeInteractor
+import com.example.playlist_maker.common.ThemeInteractor
 
 class MainViewModel(private val themeInteractor: ThemeInteractor) : ViewModel() {
 

@@ -16,8 +16,9 @@ import com.example.playlist_maker.search.domain.interactor.TracksInteractorImpl
 import com.example.playlist_maker.search.domain.repository.SearchHistoryRepository
 import com.example.playlist_maker.search.domain.repository.TracksRepository
 import com.example.playlist_maker.settings.data.repository.ThemeRepositoryImpl
-import com.example.playlist_maker.settings.domain.theme.interactor.ThemeInteractor
-import com.example.playlist_maker.settings.domain.theme.repository.ThemeRepository
+import com.example.playlist_maker.common.ThemeInteractor
+import com.example.playlist_maker.settings.domain.theme.interactor.ThemeInteractorImpl
+import com.example.playlist_maker.common.ThemeRepository
 
 object Creator {
     // для хранения темы
@@ -64,7 +65,7 @@ object Creator {
 
     fun provideThemeInteractor(): ThemeInteractor {
         val repository = providePreferencesRepository()
-        return ThemeInteractor(repository)
+        return ThemeInteractorImpl(repository)
     }
 
     fun provideSearchHistoryInteractor(): SearchHistoryInteractor {

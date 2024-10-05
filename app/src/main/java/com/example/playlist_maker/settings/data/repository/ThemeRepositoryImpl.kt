@@ -1,7 +1,7 @@
 package com.example.playlist_maker.settings.data.repository
 
 import android.content.SharedPreferences
-import com.example.playlist_maker.settings.domain.theme.repository.ThemeRepository
+import com.example.playlist_maker.common.ThemeRepository
 class ThemeRepositoryImpl(private val sharedPreferences: SharedPreferences) : ThemeRepository {
 
     override fun isDarkTheme(): Boolean {
