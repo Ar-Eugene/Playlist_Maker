@@ -3,18 +3,28 @@ package com.example.playlist_maker.settings.ui.view_model
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.playlist_maker.R
-import com.example.playlist_maker.settings.domain.theme.repository.ThemeRepository
+import com.example.playlist_maker.settings.domain.theme.interactor.ThemeInteractor
 
-class SettingsViewModel(private val themeRepository: ThemeRepository) : ViewModel() {
+class SettingsViewModel(private val themeInteractor: ThemeInteractor) : ViewModel() {
 
-    fun toggleTheme(isDark: Boolean) {
-        themeRepository.setDarkTheme(isDark)
+    private val _isDarkThemeLiveData = MutableLiveData<Boolean>()
+    val isDarkThemeLiveData: LiveData<Boolean> get() = _isDarkThemeLiveData
+
+    init {
+        _isDarkThemeLiveData.value = themeInteractor.isDarkTheme()
     }
 
-    fun isDarkTheme(): Boolean {
-        return themeRepository.isDarkTheme()
+    fun toggleTheme(isDark: Boolean) {
+        themeInteractor.setDarkTheme(isDark)
+        _isDarkThemeLiveData.value = isDark
+        AppCompatDelegate.setDefaultNightMode(
+            if (isDark) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+        )
     }
 
     fun getShareIntent(context: Context): Intent {

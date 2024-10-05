@@ -1,12 +1,11 @@
-package com.example.playlist_maker.settings.ui
+package com.example.playlist_maker
 
 import android.app.Application
 import com.example.playlist_maker.creator.Creator
 
-class SwitchTheme : Application() {
+class PlaylistMakerApp : Application() {
     override fun onCreate() {
         super.onCreate()
         Creator.init(this)
-        ThemeManager.applyTheme()
     }
 }

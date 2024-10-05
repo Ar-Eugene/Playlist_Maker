@@ -1,15 +1,14 @@
 package com.example.playlist_maker.player.ui.view_model
 
-import android.media.MediaPlayer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.playlist_maker.player.ui.MediaPlayerManager
+import com.example.playlist_maker.player.domain.PlayerInteractor
 
-class PlayerViewModelFactory(private val mediaPlayerManager: MediaPlayerManager) :
+class PlayerViewModelFactory(private val playerInteractor: PlayerInteractor) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(PlayerViewModel::class.java)) {
-            return PlayerViewModel(mediaPlayerManager) as T
+            return PlayerViewModel(playerInteractor) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

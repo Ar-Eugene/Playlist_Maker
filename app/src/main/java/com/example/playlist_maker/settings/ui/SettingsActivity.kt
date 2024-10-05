@@ -18,10 +18,9 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val themeRepository =
-            Creator.providePreferencesRepository() // Получаем репозиторий через Creator
 
-        val factory = SettingsViewModelFactory(themeRepository)
+        val themeInteractor = Creator.provideThemeInteractor()
+        val factory = SettingsViewModelFactory(themeInteractor)
         viewModel = ViewModelProvider(this, factory).get(SettingsViewModel::class.java)
 
         mySwitch = binding.mySwitch
@@ -42,20 +41,20 @@ class SettingsActivity : AppCompatActivity() {
         agreementImageView.setOnClickListener {
             startActivity(viewModel.getAgreementIntent(this))
         }
+
         initializationSwitch()
+        observeViewModel()
+    }
 
-        mySwitch.isChecked = viewModel.isDarkTheme()
-
+    private fun observeViewModel() {
+        viewModel.isDarkThemeLiveData.observe(this) { isDarkTheme ->
+            mySwitch.isChecked = isDarkTheme
+        }
     }
 
     private fun initializationSwitch() {
-        mySwitch.setOnCheckedChangeListener { _, isChecked ->
-            //Это предотвратит ненужное переключение темы, если текущее состояние переключателя уже соответствует текущей теме.
-            if (isChecked != viewModel.isDarkTheme()) {
-                viewModel.toggleTheme(isChecked)
-                ThemeManager.applyTheme()// Применяем тему при изменении состояния
-                recreate()
-            }
+        binding.mySwitch.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.toggleTheme(isChecked)
         }
     }
 }

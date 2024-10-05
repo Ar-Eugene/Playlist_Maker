@@ -1,14 +1,12 @@
-package com.example.playlist_maker.settings.ui.view_model
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.playlist_maker.settings.domain.theme.interactor.ThemeInteractor
 
-class SettingsViewModelFactory(private val themeInteractor: ThemeInteractor) :
+class MainViewModelFactory(private val themeInteractor: ThemeInteractor) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(SettingsViewModel::class.java)) {
-            return SettingsViewModel(themeInteractor) as T
+        if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
+            return MainViewModel(themeInteractor) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

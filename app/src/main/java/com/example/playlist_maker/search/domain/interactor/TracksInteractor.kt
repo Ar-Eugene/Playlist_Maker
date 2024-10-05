@@ -1,6 +1,7 @@
 package com.example.playlist_maker.search.domain.interactor
 
 import com.example.playlist_maker.search.domain.models.Track
+import com.example.playlist_maker.search.ui.models.DomainSearchError
 
 //это интерфейс, с помощью которого слой Presentation
 // будет общаться со слоем Domain.
@@ -8,10 +9,10 @@ import com.example.playlist_maker.search.domain.models.Track
 interface TracksInteractor {
     fun searchTracks(term: String, consumer: TracksConsumer)
 
-// этот интерфейс выполняет роль Callback  Для передачи
-// результатов поискового запроса, который будет выполняться в отдельном потоке
+    // этот интерфейс выполняет роль Callback  Для передачи
+    // результатов поискового запроса, который будет выполняться в отдельном потоке
     interface TracksConsumer {
         fun consume(foundTracks: List<Track>)
-        fun onError(error: Exception)
+        fun onError(error: DomainSearchError)
     }
 }

@@ -45,7 +45,7 @@ class SearchActivity : AppCompatActivity() {
             this,
             SearchViewModelFactory(
                 Creator.provideTracksInteractor(),
-                Creator.provideSearchHistoryRepository()
+                Creator.provideSearchHistoryInteractor()
             )
         )[SearchViewModel::class.java]
 
@@ -214,8 +214,8 @@ class SearchActivity : AppCompatActivity() {
                 binding.historyLayout.visibility = View.GONE
                 progressBar.visibility = View.VISIBLE
             } else {
-            binding.recyclerView.visibility = View.VISIBLE
-            progressBar.visibility = View.GONE
+                binding.recyclerView.visibility = View.VISIBLE
+                progressBar.visibility = View.GONE
             }
         }
 
@@ -235,6 +235,7 @@ class SearchActivity : AppCompatActivity() {
                 if (history.isEmpty() || !binding.inputEditText.hasFocus()) View.GONE else View.VISIBLE
         }
     }
+
     private companion object {
         // для хранения времени отклика
         const val SEARCH_DEBOUNCE_DELAY = 2000L
@@ -246,6 +247,7 @@ class SearchActivity : AppCompatActivity() {
         const val REQUEST_CODE_PLAYER = 1
 
         const val EXTRA_TRACK = "track"
+
         const val EXTRA_IS_FROM_HISTORY = "isFromHistory"
     }
 }

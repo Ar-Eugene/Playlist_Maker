@@ -1,6 +1,7 @@
 package com.example.playlist_maker.search.domain.interactor
 
 import com.example.playlist_maker.search.domain.repository.TracksRepository
+import com.example.playlist_maker.search.ui.models.DomainSearchError
 import java.util.concurrent.Executors
 
 class TracksInteractorImpl(private val repository: TracksRepository) : TracksInteractor {
@@ -11,15 +12,15 @@ class TracksInteractorImpl(private val repository: TracksRepository) : TracksInt
             try {
                 val tracks = repository.searchTracks(term)
                 if (tracks.isEmpty()) {
-                   throw EmptyListException()
+                    consumer.onError(DomainSearchError.EmptyResult)
                 } else {
                     consumer.consume(tracks)
                 }
             } catch (e: Exception) {
-                consumer.onError(e)
+                consumer.onError(DomainSearchError.NetworkError)
             }
         }
     }
 }
 
-class EmptyListException: Exception()
+//class EmptyListException : Exception()

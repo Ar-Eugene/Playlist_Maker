@@ -4,17 +4,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.playlist_maker.R
-import com.example.playlist_maker.search.domain.interactor.EmptyListException
+import com.example.playlist_maker.search.domain.interactor.SearchHistoryInteractor
 import com.example.playlist_maker.search.domain.interactor.TracksInteractor
 import com.example.playlist_maker.search.domain.models.Track
-import com.example.playlist_maker.search.domain.repository.SearchHistoryRepository
+import com.example.playlist_maker.search.ui.models.DomainSearchError
 import com.example.playlist_maker.search.ui.models.SearchError
 
 //SearchViewModel принимает два параметра в конструкторе:
 // interactor для поиска треков и searchHistoryRepository для работы с историей поиска.
 class SearchViewModel(
-    private val interactor: TracksInteractor,
-    private val searchHistoryRepository: SearchHistoryRepository
+    private val tracksInteractor: TracksInteractor,
+    private val searchHistoryInteractor: SearchHistoryInteractor
 ) : ViewModel() {
 
     // приватная изменяемая (_tracks) и публичная неизменяемая (tracks) LiveData
@@ -37,29 +37,33 @@ class SearchViewModel(
     fun search(query: String) {
         _error.postValue(null)
         _isLoading.value = true
-        interactor.searchTracks(query, object : TracksInteractor.TracksConsumer {
+        tracksInteractor.searchTracks(query, object : TracksInteractor.TracksConsumer {
             override fun consume(foundTracks: List<Track>) {
                 _tracks.postValue(foundTracks)
                 _isLoading.postValue(false)
             }
 
-            override fun onError(error: Exception) {
-                if (error is EmptyListException) {
-                    _error.postValue(
+            override fun onError(error: DomainSearchError) {
+                when (error) {
+                    DomainSearchError.EmptyResult -> {
+                        _error.postValue(
                             SearchError(
                                 icon = R.drawable.search_error,
                                 text = R.string.nothing_found,
                                 showRefreshButton = false
                             )
-                    )
-                } else {
-                    _error.postValue(
-                        SearchError(
-                            icon = R.drawable.connection_problem,
-                            text = R.string.check_connection,
-                            showRefreshButton = true
                         )
-                    )
+                    }
+
+                    DomainSearchError.NetworkError -> {
+                        _error.postValue(
+                            SearchError(
+                                icon = R.drawable.connection_problem,
+                                text = R.string.check_connection,
+                                showRefreshButton = true
+                            )
+                        )
+                    }
                 }
                 _tracks.postValue(emptyList())
                 _isLoading.postValue(false)
@@ -68,17 +72,17 @@ class SearchViewModel(
     }
 
     fun saveTrackToHistory(track: Track) {
-        searchHistoryRepository.saveSearchHistory(track)
+        searchHistoryInteractor.saveTrackToHistory(track)
         updateHistory()
     }
 
     fun clearHistory() {
-        searchHistoryRepository.clearSearchHistory()
+        searchHistoryInteractor.clearSearchHistory()
         updateHistory()
     }
 
     fun updateHistory() {
-        _history.value = searchHistoryRepository.getSearchHistory()
+        _history.value = searchHistoryInteractor.getSearchHistory()
     }
 
     fun clearTrackList() {

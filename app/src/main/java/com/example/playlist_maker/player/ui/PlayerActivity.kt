@@ -26,7 +26,7 @@ class PlayerActivity : AppCompatActivity() {
 
         playerViewModel = ViewModelProvider(
             this,
-            PlayerViewModelFactory(Creator.provideMediaPlayerManager())
+            PlayerViewModelFactory(Creator.providePlayerInteractor())
         )[PlayerViewModel::class.java]
 
         observeViewModel()
@@ -38,7 +38,7 @@ class PlayerActivity : AppCompatActivity() {
         // Получаем переданные данные
         val track = intent.getSerializableExtra(EXTRA_TRACK) as? Track
             ?: return  // Используем getSerializableExtra
-        val isFromHistory = intent.getBooleanExtra(EXTRA_IS_FROM_HISTORY, false)
+        //val isFromHistory = intent.getBooleanExtra(EXTRA_IS_FROM_HISTORY, false)
 
         // Установка значений на экран
         binding.trackName.text = track.trackName
