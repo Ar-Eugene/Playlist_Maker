@@ -3,12 +3,12 @@ package com.example.playlist_maker.creator
 import android.content.Context
 import android.content.SharedPreferences
 import com.example.playlist_maker.player.data.MediaPlayerRepositoryImpl
-import com.example.playlist_maker.player.domain.MediaPlayerRepository
-import com.example.playlist_maker.player.domain.PlayerInteractor
+import com.example.playlist_maker.player.domain.api.MediaPlayerRepository
+import com.example.playlist_maker.player.domain.api.PlayerInteractor
 import com.example.playlist_maker.player.domain.PlayerInteractorImpl
 import com.example.playlist_maker.search.data.network.RetrofitNetworkClient
-import com.example.playlist_maker.search.data.repository.SearchHistoryRepositoryImpl
-import com.example.playlist_maker.search.data.repository.TracksRepositoryImpl
+import com.example.playlist_maker.search.data.impl.SearchHistoryRepositoryImpl
+import com.example.playlist_maker.search.data.impl.TracksRepositoryImpl
 import com.example.playlist_maker.search.domain.interactor.SearchHistoryInteractor
 import com.example.playlist_maker.search.domain.interactor.SearchHistoryInteractorImpl
 import com.example.playlist_maker.search.domain.interactor.TracksInteractor

@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.playlist_maker.search.domain.interactor.SearchHistoryInteractor
 import com.example.playlist_maker.search.domain.interactor.TracksInteractor
-import com.example.playlist_maker.search.domain.repository.SearchHistoryRepository
 
 class SearchViewModelFactory(
     private val tracksInteractor: TracksInteractor,

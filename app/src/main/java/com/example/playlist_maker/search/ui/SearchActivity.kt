@@ -162,10 +162,13 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun showError(error: SearchError) {
-        binding.placeholderError.visibility = View.VISIBLE
-        binding.placeholderImage.setImageResource(error.icon)
-        binding.placeholderMessage.text = getString(error.text)
-        binding.refreshButton.visibility = if (error.showRefreshButton) View.VISIBLE else View.GONE
+        with(binding){
+            placeholderError.visibility = View.VISIBLE
+            placeholderImage.setImageResource(error.icon)
+            placeholderMessage.text = getString(error.text)
+            refreshButton.visibility = if (error.showRefreshButton) View.VISIBLE else View.GONE
+        }
+
     }
 
     private fun hideKeyboard() {

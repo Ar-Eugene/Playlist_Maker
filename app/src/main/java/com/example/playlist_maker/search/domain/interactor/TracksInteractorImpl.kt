@@ -22,5 +22,3 @@ class TracksInteractorImpl(private val repository: TracksRepository) : TracksInt
         }
     }
 }
-
-//class EmptyListException : Exception()

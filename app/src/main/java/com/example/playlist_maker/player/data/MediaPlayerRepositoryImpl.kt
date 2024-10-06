@@ -1,7 +1,7 @@
 package com.example.playlist_maker.player.data
 
 import android.media.MediaPlayer
-import com.example.playlist_maker.player.domain.MediaPlayerRepository
+import com.example.playlist_maker.player.domain.api.MediaPlayerRepository
 
 class MediaPlayerRepositoryImpl : MediaPlayerRepository {
 
@@ -45,7 +45,6 @@ class MediaPlayerRepositoryImpl : MediaPlayerRepository {
             pause()
             playerState = STATE_PAUSED
         }
-
     }
 
     // метод отвечает за управление воспроизведением аудиотрека в зависимости от текущего состояния плеера.
@@ -60,7 +59,6 @@ class MediaPlayerRepositoryImpl : MediaPlayerRepository {
                 startPlayer()
                 return true
             }
-
             else -> return false
         }
     }

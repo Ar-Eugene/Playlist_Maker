@@ -1,4 +1,4 @@
-package com.example.playlist_maker.main
+package com.example.playlist_maker.main.ui
 
 import MainViewModel
 import MainViewModelFactory
@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this, factory).get(MainViewModel::class.java)
 
 
-        // Вызываем applyTheme, чтобы получить текущую тему
+        // Применяем тему при создании активити
         viewModel.applyTheme()
 
 

@@ -7,5 +7,9 @@ class PlaylistMakerApp : Application() {
     override fun onCreate() {
         super.onCreate()
         Creator.init(this)
+
+        // Применяем тему при запуске приложения
+        val themeInteractor = Creator.provideThemeInteractor()
+        themeInteractor.applyTheme()
     }
 }

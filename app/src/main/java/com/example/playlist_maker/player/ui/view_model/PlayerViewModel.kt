@@ -5,7 +5,7 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.playlist_maker.player.domain.PlayerInteractor
+import com.example.playlist_maker.player.domain.api.PlayerInteractor
 
 class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewModel() {
 

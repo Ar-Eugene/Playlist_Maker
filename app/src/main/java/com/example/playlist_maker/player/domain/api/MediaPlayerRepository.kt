@@ -1,4 +1,4 @@
-package com.example.playlist_maker.player.domain
+package com.example.playlist_maker.player.domain.api
 
 interface MediaPlayerRepository {
 

@@ -1,5 +1,8 @@
 package com.example.playlist_maker.player.domain
 
+import com.example.playlist_maker.player.domain.api.MediaPlayerRepository
+import com.example.playlist_maker.player.domain.api.PlayerInteractor
+
 class PlayerInteractorImpl(private val mediaPlayerRepository: MediaPlayerRepository) :
     PlayerInteractor {
 

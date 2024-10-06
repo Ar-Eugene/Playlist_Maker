@@ -38,13 +38,14 @@ class PlayerActivity : AppCompatActivity() {
         // Получаем переданные данные
         val track = intent.getSerializableExtra(EXTRA_TRACK) as? Track
             ?: return  // Используем getSerializableExtra
-        //val isFromHistory = intent.getBooleanExtra(EXTRA_IS_FROM_HISTORY, false)
 
         // Установка значений на экран
-        binding.trackName.text = track.trackName
-        binding.trackArtist.text = track.artistName
-        binding.textDurationValue.text =
-            SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis)
+        with(binding) {
+            trackName.text = track.trackName
+            trackArtist.text = track.artistName
+            textDurationValue.text =
+                SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis)
+        }
         val artworkUrl512 = track.artworkUrl100.replaceAfterLast("/", "512x512bb.jpg")
         Glide.with(this)
             .load(artworkUrl512)
@@ -52,19 +53,20 @@ class PlayerActivity : AppCompatActivity() {
             .error(R.drawable.error_image)
             .transform(RoundedCorners(20))
             .into(binding.albumPosterImage)
-        binding.textCountryValue.text = track.country
-        binding.textGenreValue.text = track.primaryGenreName
-        binding.textYearValue.text = SimpleDateFormat(
-            "yyyy",
-            Locale.getDefault()
-        ).format(
-            SimpleDateFormat(
-                "yyyy-MM-dd'T'HH:mm:ss'Z'",
+        with(binding) {
+            textCountryValue.text = track.country
+            textGenreValue.text = track.primaryGenreName
+            textYearValue.text = SimpleDateFormat(
+                "yyyy",
                 Locale.getDefault()
-            ).parse(track.releaseDate)!!
-        )
-        binding.textAlbumValue.text = track.collectionName
-
+            ).format(
+                SimpleDateFormat(
+                    "yyyy-MM-dd'T'HH:mm:ss'Z'",
+                    Locale.getDefault()
+                ).parse(track.releaseDate)!!
+            )
+            textAlbumValue.text = track.collectionName
+        }
         playerViewModel.preparePlayer(track.previewUrl)
         // Возвращаемся на экран "Поиск"
         backArrowButton()

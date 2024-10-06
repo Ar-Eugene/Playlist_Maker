@@ -11,4 +11,7 @@ class ThemeInteractorImpl(private val themeRepository: ThemeRepository) : ThemeI
     override fun setDarkTheme(isDark: Boolean) {
         themeRepository.setDarkTheme(isDark)
     }
+    override fun applyTheme() {
+        themeRepository.applyTheme()
+    }
 }
