@@ -2,6 +2,7 @@ package com.example.playlist_maker.di
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.media.MediaPlayer
 import com.example.playlist_maker.search.data.network.NetworkClient
 import com.example.playlist_maker.search.data.network.RetrofitNetworkClient
 import com.example.playlist_maker.search.data.network.TrackApi
@@ -34,5 +35,7 @@ val dataModule = module {
     single {
         androidContext().getSharedPreferences("MY_TRACKS", Context.MODE_PRIVATE)
     }
+
+    factory { MediaPlayer() }
 
 }

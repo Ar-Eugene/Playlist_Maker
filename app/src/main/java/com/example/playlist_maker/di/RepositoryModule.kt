@@ -25,6 +25,6 @@ val repositoryModule = module {
     }
 
     factory<MediaPlayerRepository> {
-        MediaPlayerRepositoryImpl()
+        MediaPlayerRepositoryImpl(mediaPlayer = get())
     }
 }

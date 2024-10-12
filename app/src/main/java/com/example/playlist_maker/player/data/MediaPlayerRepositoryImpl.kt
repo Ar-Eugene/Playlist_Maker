@@ -3,19 +3,16 @@ package com.example.playlist_maker.player.data
 import android.media.MediaPlayer
 import com.example.playlist_maker.player.domain.api.MediaPlayerRepository
 
-class MediaPlayerRepositoryImpl : MediaPlayerRepository {
+class MediaPlayerRepositoryImpl(private val mediaPlayer: MediaPlayer?) : MediaPlayerRepository {
 
     private var playerState = STATE_DEFAULT
-    private var mediaPlayer: MediaPlayer? = null
 
     override fun preparePlayer(
         previewUrl: String,
         onPreparedCallback: () -> Unit,
         onCompleteCallback: () -> Unit
     ) {
-        if (mediaPlayer == null) {
-            mediaPlayer = MediaPlayer()
-        }
+
         mediaPlayer?.apply {
             setDataSource(previewUrl)//устанавливает URL-адрес аудиотрека, который нужно воспроизвести.
             prepareAsync()//начинает асинхронную подготовку MediaPlayer, чтобы избежать блокировки основного потока.
@@ -49,17 +46,18 @@ class MediaPlayerRepositoryImpl : MediaPlayerRepository {
 
     // метод отвечает за управление воспроизведением аудиотрека в зависимости от текущего состояния плеера.
     override fun playbackControl(): Boolean {
-        when (playerState) {
+        return when (playerState) {
             STATE_PLAYING -> {
                 pausePlayer()
-                return false
+                false
             }
 
             STATE_PREPARED, STATE_PAUSED -> {
                 startPlayer()
-                return true
+                true
             }
-            else -> return false
+
+            else -> false
         }
     }
 
