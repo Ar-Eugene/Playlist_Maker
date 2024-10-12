@@ -3,31 +3,24 @@ package com.example.playlist_maker.player.ui
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlist_maker.R
-import com.example.playlist_maker.creator.Creator
 import com.example.playlist_maker.databinding.ActivityPlayerBinding
 import com.example.playlist_maker.player.ui.view_model.PlayerViewModel
-import com.example.playlist_maker.player.ui.view_model.PlayerViewModelFactory
 import com.example.playlist_maker.search.domain.models.Track
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class PlayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayerBinding
-    private lateinit var playerViewModel: PlayerViewModel
+    private val playerViewModel: PlayerViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        playerViewModel = ViewModelProvider(
-            this,
-            PlayerViewModelFactory(Creator.providePlayerInteractor())
-        )[PlayerViewModel::class.java]
 
         observeViewModel()
 

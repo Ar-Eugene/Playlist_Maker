@@ -2,7 +2,6 @@ package com.example.playlist_maker.search.ui
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -12,16 +11,15 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ProgressBar
-import androidx.lifecycle.ViewModelProvider
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.playlist_maker.creator.Creator
 import com.example.playlist_maker.R
-import com.example.playlist_maker.search.domain.models.Track
 import com.example.playlist_maker.databinding.ActivitySearchBinding
 import com.example.playlist_maker.player.ui.PlayerActivity
+import com.example.playlist_maker.search.domain.models.Track
 import com.example.playlist_maker.search.ui.models.SearchError
 import com.example.playlist_maker.search.ui.view_model.SearchViewModel
-import com.example.playlist_maker.search.ui.view_model.SearchViewModelFactory
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySearchBinding
@@ -33,21 +31,12 @@ class SearchActivity : AppCompatActivity() {
     private val trackAdapter = TrackAdapter()
     private val historyAdapter = TrackAdapter()
     private var isClickAllowed = true
-    private lateinit var viewModel: SearchViewModel
+    private val searchViewModel: SearchViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        // Инициализируем ViewModel через фабрику
-        viewModel = ViewModelProvider(
-            this,
-            SearchViewModelFactory(
-                Creator.provideTracksInteractor(),
-                Creator.provideSearchHistoryInteractor()
-            )
-        )[SearchViewModel::class.java]
 
         // Подписываемся на обновления данных из ViewModel
         observeViewModel()
@@ -68,7 +57,7 @@ class SearchActivity : AppCompatActivity() {
             handleTrackClick(track, true)
         }
         binding.buttonClearHistory.setOnClickListener {
-            viewModel.clearHistory() // Вызываем очистку истории через ViewModel
+            searchViewModel.clearHistory() // Вызываем очистку истории через ViewModel
         }
         val backArrowplayButton = binding.backArrow
         backArrowplayButton.setOnClickListener {
@@ -78,7 +67,7 @@ class SearchActivity : AppCompatActivity() {
             inputEditText.text.clear()
             hideKeyboard()
             it.visibility = View.GONE
-            viewModel.clearTrackList()
+            searchViewModel.clearTrackList()
         }
 
         // Обработка ввода текста
@@ -92,7 +81,7 @@ class SearchActivity : AppCompatActivity() {
                 searchDebounce()
                 if (s.isNullOrEmpty()) {
                     clearButton.visibility = View.GONE
-                    viewModel.clearTrackList()
+                    searchViewModel.clearTrackList()
                 } else {
                     hideHistory()
                     clearButton.visibility = View.VISIBLE
@@ -104,7 +93,7 @@ class SearchActivity : AppCompatActivity() {
             }
         })
         inputEditText.setOnFocusChangeListener { _, _ ->
-            viewModel.updateHistory()
+            searchViewModel.updateHistory()
         }
 
         binding.refreshButton.setOnClickListener {
@@ -140,18 +129,18 @@ class SearchActivity : AppCompatActivity() {
 
         binding.historyRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.historyRecyclerView.adapter = historyAdapter
-        viewModel.updateHistory()
+        searchViewModel.updateHistory()
     }
 
     // Метод для поиска через интерактор
     private fun search() {
-        viewModel.search(binding.inputEditText.text.toString())
+        searchViewModel.search(binding.inputEditText.text.toString())
     }
 
     // Функция обработки клика на трек (из поиска или истории)
     private fun handleTrackClick(track: Track, isFromHistory: Boolean = false) {
         // Добавляем трек в историю, если его там нет
-        viewModel.saveTrackToHistory(track)
+        searchViewModel.saveTrackToHistory(track)
         hideHistory()
         // Переход в PlayerActivity
         val intent = Intent(this, PlayerActivity::class.java).apply {
@@ -199,19 +188,19 @@ class SearchActivity : AppCompatActivity() {
         if (requestCode == REQUEST_CODE_PLAYER && resultCode == RESULT_OK) {
             val isFromHistory = data?.getBooleanExtra(EXTRA_IS_FROM_HISTORY, false) ?: false
             if (isFromHistory) {
-                viewModel.updateHistory()
+                searchViewModel.updateHistory()
             }
         }
     }
 
     private fun observeViewModel() {
-        viewModel.tracks.observe(this) { tracks ->
+        searchViewModel.tracks.observe(this) { tracks ->
             trackList.clear()
             trackList.addAll(tracks)
             trackAdapter.notifyDataSetChanged()
         }
 
-        viewModel.isLoading.observe(this) { isLoading ->
+        searchViewModel.isLoading.observe(this) { isLoading ->
             if (isLoading) {
                 binding.recyclerView.visibility = View.GONE
                 binding.historyLayout.visibility = View.GONE
@@ -222,7 +211,7 @@ class SearchActivity : AppCompatActivity() {
             }
         }
 
-        viewModel.error.observe(this) { error ->
+        searchViewModel.error.observe(this) { error ->
             if (error == null) {
                 binding.placeholderError.visibility = View.GONE
             } else {
@@ -230,7 +219,7 @@ class SearchActivity : AppCompatActivity() {
             }
         }
 
-        viewModel.history.observe(this) { history ->
+        searchViewModel.history.observe(this) { history ->
             historyAdapter.trackList = ArrayList(history)
             historyAdapter.notifyDataSetChanged()
             // Скрываем historyLayout, если нет данных или EditText в фокусе

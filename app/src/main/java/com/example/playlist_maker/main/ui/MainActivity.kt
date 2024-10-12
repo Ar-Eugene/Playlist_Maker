@@ -1,32 +1,25 @@
 package com.example.playlist_maker.main.ui
 
 import MainViewModel
-import MainViewModelFactory
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import androidx.lifecycle.ViewModelProvider
 import com.example.playlist_maker.R
-import com.example.playlist_maker.creator.Creator
 import com.example.playlist_maker.mediateca.MediatecaActivity
 import com.example.playlist_maker.search.ui.SearchActivity
 import com.example.playlist_maker.settings.ui.SettingsActivity
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var viewModel: MainViewModel
+    private val mainViewModel: MainViewModel by viewModel()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val themeInteractor = Creator.provideThemeInteractor()
-        val factory = MainViewModelFactory(themeInteractor)
-        viewModel = ViewModelProvider(this, factory).get(MainViewModel::class.java)
-
-
         // Применяем тему при создании активити
-        viewModel.applyTheme()
+        mainViewModel.applyTheme()
 
 
         val searchPlayButton = findViewById<Button>(R.id.search)
