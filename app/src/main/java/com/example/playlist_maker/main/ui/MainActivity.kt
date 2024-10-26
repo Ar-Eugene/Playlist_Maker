@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import com.example.playlist_maker.R
-import com.example.playlist_maker.mediateca.MediatecaActivity
+import com.example.playlist_maker.mediateca.ui.MediatekaActivity
 import com.example.playlist_maker.search.ui.SearchActivity
 import com.example.playlist_maker.settings.ui.SettingsActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
         val mediatecaPlayButton = findViewById<Button>(R.id.mediateca)
         mediatecaPlayButton.setOnClickListener {
-            val mediatecaPlayIntent = Intent(this, MediatecaActivity::class.java)
+            val mediatecaPlayIntent = Intent(this, MediatekaActivity::class.java)
             startActivity(mediatecaPlayIntent)
         }
         val settingsPlayButton = findViewById<Button>(R.id.settings)

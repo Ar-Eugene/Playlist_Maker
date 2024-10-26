@@ -28,8 +28,9 @@
             android:exported="false"
             android:theme="@style/Base.Theme.Playlist_Maker" />
         <activity
-            android:name=".mediateca.MediatecaActivity"
-            android:exported="false" />
+            android:name=".mediateca.ui.MediatekaActivity"
+            android:exported="false"
+            android:theme="@style/Base.Theme.Playlist_Maker"/>
         <activity
             android:name=".main.ui.MainActivity"
             android:exported="true"
