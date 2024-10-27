@@ -28,7 +28,9 @@
         app:tabTextColor="?attr/ColorBlackOrWhite"
         app:tabMode="fixed"
         app:tabIndicatorColor="?attr/ColorBlackOrWhite"
-        app:tabIndicatorFullWidth="true"/>
+        app:tabIndicatorFullWidth="true"
+        app:tabTextAppearance="@style/CustomTabText"
+        android:layout_marginHorizontal="@dimen/size_16dp"/>
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
