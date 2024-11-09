@@ -20,21 +20,22 @@
             android:exported="false"
             android:theme="@style/Base.Theme.Playlist_Maker" />
         <activity
-            android:name=".settings.ui.SettingsActivity"
+            android:name=".settings.ui.SettingsFragment"
             android:exported="false"
             android:theme="@style/Base.Theme.Playlist_Maker" />
         <activity
-            android:name=".search.ui.SearchActivity"
+            android:name=".search.ui.SearchFragment"
             android:exported="false"
             android:theme="@style/Base.Theme.Playlist_Maker" />
         <activity
-            android:name=".mediateca.ui.MediatekaActivity"
+            android:name=".mediateca.ui.MediatekaFragment"
             android:exported="false"
             android:theme="@style/Base.Theme.Playlist_Maker"/>
         <activity
             android:name=".main.ui.MainActivity"
             android:exported="true"
-            android:theme="@style/Base.Theme.Playlist_Maker">
+            android:theme="@style/Base.Theme.Playlist_Maker"
+            android:windowSoftInputMode="adjustNothing">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
