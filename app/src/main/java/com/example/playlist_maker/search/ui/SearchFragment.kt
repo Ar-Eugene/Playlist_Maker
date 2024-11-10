@@ -188,7 +188,6 @@ class SearchFragment : Fragment() {
         }
     }
 
-
     private fun observeViewModel() {
         searchViewModel.tracks.observe(viewLifecycleOwner) { tracks ->
             trackList.clear()

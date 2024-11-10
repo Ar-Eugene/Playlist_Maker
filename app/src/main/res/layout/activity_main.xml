@@ -28,5 +28,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:itemIconTint="@color/bottom_naw_selector"
         app:itemTextColor="@color/bottom_naw_selector"
+        android:textFontWeight ="400"
+        android:fontFamily="@font/ys_display_regular"
+        app:itemTextAppearanceActive="@style/BottomNavTextAppearance"
+        app:itemTextAppearanceInactive="@style/BottomNavTextAppearance"
         app:menu="@menu/bottom_navigation_menu"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
