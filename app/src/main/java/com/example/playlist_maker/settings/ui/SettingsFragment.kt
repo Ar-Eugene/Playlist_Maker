@@ -1,13 +1,10 @@
 package com.example.playlist_maker.settings.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-
 import com.example.playlist_maker.databinding.FragmentSettingsBinding
 import com.example.playlist_maker.settings.ui.view_model.SettingsViewModel
 import com.google.android.material.switchmaterial.SwitchMaterial
@@ -44,18 +41,18 @@ class SettingsFragment : Fragment() {
         agreementImageView.setOnClickListener {
             startActivity(settingsViewModel.getAgreementIntent(requireContext()))
         }
-        initializationSwitch(mySwitch)
-        observeViewModel(mySwitch)
+        initializationSwitch()
+        observeViewModel()
     }
 
-    private fun observeViewModel(mySwitch: SwitchMaterial) {
+    private fun observeViewModel() {
         settingsViewModel.isDarkThemeLiveData.observe(viewLifecycleOwner) { isDarkTheme ->
             mySwitch.isChecked = isDarkTheme
         }
     }
 
-    private fun initializationSwitch(mySwitch: SwitchMaterial) {
-        mySwitch.setOnCheckedChangeListener { _, isChecked ->
+    private fun initializationSwitch() {
+        binding.mySwitch.setOnCheckedChangeListener { _, isChecked ->
             settingsViewModel.toggleTheme(isChecked)
         }
     }
