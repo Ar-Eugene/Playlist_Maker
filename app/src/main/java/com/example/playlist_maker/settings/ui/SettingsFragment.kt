@@ -24,7 +24,6 @@ class SettingsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         mySwitch = binding.mySwitch
 
         val shareAppImageView = binding.share
