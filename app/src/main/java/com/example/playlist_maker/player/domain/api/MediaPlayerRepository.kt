@@ -1,7 +1,8 @@
 package com.example.playlist_maker.player.domain.api
 
-interface MediaPlayerRepository {
+import kotlinx.coroutines.flow.Flow
 
+interface MediaPlayerRepository {
     fun preparePlayer(
         previewUrl: String,
         onPreparedCallback: () -> Unit,
@@ -9,12 +10,8 @@ interface MediaPlayerRepository {
     )
 
     fun pausePlayer()
-
-    // метод отвечает за управление воспроизведением аудиотрека в зависимости от текущего состояния плеера.
-    //возвращает состояние воспроизведения
     fun playbackControl(): Boolean
-
-    fun getCurrentPosition(): Int
-
     fun release()
+    fun getCurrentPositionFlow(): Flow<Int>
+    fun getPlayerStateFlow(): Flow<Int>
 }

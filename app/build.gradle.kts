@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.example.playlist_maker"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.playlist_maker"
@@ -59,4 +59,5 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.8.4")
     implementation("androidx.navigation:navigation-fragment-ktx:2.5.3")
     implementation("androidx.navigation:navigation-ui-ktx:2.5.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
 }

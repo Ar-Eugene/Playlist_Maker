@@ -93,13 +93,10 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun observeViewModel() {
-        playerViewModel.updateTimeRunnable.observe(this) { time ->
-            if (time == 0) {
-                binding.textTrackTimeValue.text = getString(R.string.current_time)
-            } else {
-                binding.textTrackTimeValue.text =
-                    SimpleDateFormat("mm:ss", Locale.getDefault()).format(time)
-            }
+        playerViewModel.currentPlayingTime.observe(this) { time ->
+            binding.textTrackTimeValue.text =
+                if (time == 0) getString(R.string.current_time)
+                else SimpleDateFormat("mm:ss", Locale.getDefault()).format(time)
         }
 
         playerViewModel.playButtonEnabled.observe(this) { isEnabled ->
@@ -113,6 +110,7 @@ class PlayerActivity : AppCompatActivity() {
                 binding.playButton.setImageResource(R.drawable.play_button)
             }
         }
+
     }
 
     private companion object {

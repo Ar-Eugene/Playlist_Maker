@@ -2,51 +2,53 @@ package com.example.playlist_maker.player.data
 
 import android.media.MediaPlayer
 import com.example.playlist_maker.player.domain.api.MediaPlayerRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 
 class MediaPlayerRepositoryImpl(private val mediaPlayer: MediaPlayer?) : MediaPlayerRepository {
 
-    private var playerState = STATE_DEFAULT
+    private val _playerState = MutableStateFlow(STATE_DEFAULT)
+    private val _currentPositionFlow = MutableStateFlow(0)
 
     override fun preparePlayer(
         previewUrl: String,
         onPreparedCallback: () -> Unit,
         onCompleteCallback: () -> Unit
     ) {
-
         mediaPlayer?.apply {
-            setDataSource(previewUrl)//устанавливает URL-адрес аудиотрека, который нужно воспроизвести.
-            prepareAsync()//начинает асинхронную подготовку MediaPlayer, чтобы избежать блокировки основного потока.
+            setDataSource(previewUrl)
+            prepareAsync()
             setOnPreparedListener {
-                playerState =
-                    STATE_PREPARED //обновляет состояние плеера, указывая, что он готов к воспроизведению.
+                _playerState.value = STATE_PREPARED
                 onPreparedCallback()
             }
-            setOnCompletionListener { // устанавливает слушателя, который срабатывает, когда воспроизведение трека завершено.
-                playerState = STATE_PREPARED//сбрасывает состояние плеера.
+            setOnCompletionListener {
+                _playerState.value = STATE_PREPARED
                 onCompleteCallback()
             }
         }
-
     }
 
     private fun startPlayer() {
         mediaPlayer?.apply {
             start()
-            playerState = STATE_PLAYING
+            _playerState.value = STATE_PLAYING
         }
-
     }
 
     override fun pausePlayer() {
         mediaPlayer?.apply {
             pause()
-            playerState = STATE_PAUSED
+            _playerState.value = STATE_PAUSED
         }
     }
 
-    // метод отвечает за управление воспроизведением аудиотрека в зависимости от текущего состояния плеера.
     override fun playbackControl(): Boolean {
-        return when (playerState) {
+        return when (_playerState.value) {
             STATE_PLAYING -> {
                 pausePlayer()
                 false
@@ -61,14 +63,26 @@ class MediaPlayerRepositoryImpl(private val mediaPlayer: MediaPlayer?) : MediaPl
         }
     }
 
-    override fun getCurrentPosition(): Int = mediaPlayer?.currentPosition ?: 0
+    override fun getCurrentPositionFlow(): Flow<Int> = _currentPositionFlow
+
+    override fun getPlayerStateFlow(): Flow<Int> = _playerState
 
     override fun release() {
         mediaPlayer?.release()
     }
 
+    init {
+        CoroutineScope(Dispatchers.Default).launch {
+            while (true) {
+                if (_playerState.value == STATE_PLAYING) {
+                    _currentPositionFlow.value = mediaPlayer?.currentPosition ?: 0
+                }
+                delay(300)
+            }
+        }
+    }
+
     private companion object {
-        // константы для отслеживания состояние медиаплеера
         const val STATE_DEFAULT = 0
         const val STATE_PREPARED = 1
         const val STATE_PLAYING = 2

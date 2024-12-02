@@ -6,5 +6,5 @@ import com.example.playlist_maker.search.data.dto.Response
 // слою Domain не важно, какой инструмент будет работать с сетью.
 // когда Domain будет делать запрос то ответ будет приходить через этот interface
 interface NetworkClient {
-    fun doRequest(dto: Any): Response
+    suspend fun doRequest(dto: Any): Response
 }

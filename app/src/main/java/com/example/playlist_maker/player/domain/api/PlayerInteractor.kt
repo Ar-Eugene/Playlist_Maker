@@ -1,5 +1,7 @@
 package com.example.playlist_maker.player.domain.api
 
+import kotlinx.coroutines.flow.Flow
+
 interface PlayerInteractor {
     fun preparePlayer(
         previewUrl: String,
@@ -9,6 +11,7 @@ interface PlayerInteractor {
 
     fun pausePlayer()
     fun playbackControl(): Boolean
-    fun getCurrentPosition(): Int
     fun release()
+    fun getCurrentPositionFlow(): Flow<Int>
+    fun getPlayerStateFlow(): Flow<Int>
 }
