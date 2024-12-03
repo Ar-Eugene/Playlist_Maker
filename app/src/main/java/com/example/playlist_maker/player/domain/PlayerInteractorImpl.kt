@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 class PlayerInteractorImpl(private val mediaPlayerRepository: MediaPlayerRepository) :
     PlayerInteractor {
+
     override fun preparePlayer(
         previewUrl: String,
         onPreparedCallback: () -> Unit,
@@ -22,16 +23,19 @@ class PlayerInteractorImpl(private val mediaPlayerRepository: MediaPlayerReposit
         return mediaPlayerRepository.playbackControl()
     }
 
-    override fun getCurrentPositionFlow(): Flow<Int> {
-        return mediaPlayerRepository.getCurrentPositionFlow()
+    override fun release() {
+        mediaPlayerRepository.release()
+    }
+
+    override fun getCurrentPosition(): Int {
+        return mediaPlayerRepository.getCurrentPosition()
+    }
+
+    override fun isPlaying(): Boolean {
+        return mediaPlayerRepository.isPlaying()
     }
 
     override fun getPlayerStateFlow(): Flow<Int> {
         return mediaPlayerRepository.getPlayerStateFlow()
     }
-
-    override fun release() {
-        mediaPlayerRepository.release()
-    }
-
 }

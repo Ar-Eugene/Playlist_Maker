@@ -12,7 +12,6 @@ import kotlinx.coroutines.launch
 class MediaPlayerRepositoryImpl(private val mediaPlayer: MediaPlayer?) : MediaPlayerRepository {
 
     private val _playerState = MutableStateFlow(STATE_DEFAULT)
-    private val _currentPositionFlow = MutableStateFlow(0)
 
     override fun preparePlayer(
         previewUrl: String,
@@ -63,23 +62,18 @@ class MediaPlayerRepositoryImpl(private val mediaPlayer: MediaPlayer?) : MediaPl
         }
     }
 
-    override fun getCurrentPositionFlow(): Flow<Int> = _currentPositionFlow
-
-    override fun getPlayerStateFlow(): Flow<Int> = _playerState
-
     override fun release() {
         mediaPlayer?.release()
     }
 
-    init {
-        CoroutineScope(Dispatchers.Default).launch {
-            while (true) {
-                if (_playerState.value == STATE_PLAYING) {
-                    _currentPositionFlow.value = mediaPlayer?.currentPosition ?: 0
-                }
-                delay(300)
-            }
-        }
+    override fun getPlayerStateFlow(): Flow<Int> = _playerState
+
+    override fun getCurrentPosition(): Int {
+        return mediaPlayer?.currentPosition ?: 0
+    }
+
+    override fun isPlaying(): Boolean {
+        return _playerState.value == STATE_PLAYING
     }
 
     private companion object {

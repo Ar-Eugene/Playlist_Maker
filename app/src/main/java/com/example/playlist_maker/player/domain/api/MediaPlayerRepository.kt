@@ -12,6 +12,8 @@ interface MediaPlayerRepository {
     fun pausePlayer()
     fun playbackControl(): Boolean
     fun release()
-    fun getCurrentPositionFlow(): Flow<Int>
     fun getPlayerStateFlow(): Flow<Int>
+
+    fun getCurrentPosition(): Int
+    fun isPlaying(): Boolean
 }

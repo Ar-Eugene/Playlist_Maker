@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlist_maker.player.domain.api.PlayerInteractor
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewModel() {
@@ -42,15 +43,17 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
 
     fun pausePlayer() {
         playerInteractor.pausePlayer()
-        _isPlaying.value = false // Обновляем LiveData, чтобы остановить обновление UI
+        _isPlaying.value = false
     }
 
     init {
         viewModelScope.launch {
-            playerInteractor.getCurrentPositionFlow()
-                .collect { position ->
-                    _currentPlayingTime.postValue(position)
+            while (true) {
+                if (playerInteractor.isPlaying()) {
+                    _currentPlayingTime.postValue(playerInteractor.getCurrentPosition())
                 }
+                delay(300)
+            }
         }
 
         viewModelScope.launch {
