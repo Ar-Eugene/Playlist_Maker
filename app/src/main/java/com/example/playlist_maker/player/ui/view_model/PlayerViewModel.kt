@@ -26,7 +26,7 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
         val isPlaying = playerInteractor.playbackControl()
         _isPlaying.value = isPlaying
 
-        if (isPlaying) {//добавил эту обработку
+        if (isPlaying) {
             startUpdatingCurrentTime()
         } else {
             stopUpdatingCurrentTime()
@@ -48,16 +48,16 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
     private fun onComplete() {
         _isPlaying.value = false
         _currentPlayingTime.value = 0
-        stopUpdatingCurrentTime()// добавил
+        stopUpdatingCurrentTime()
     }
 
     fun pausePlayer() {
         playerInteractor.pausePlayer()
         _isPlaying.value = false
-        stopUpdatingCurrentTime()// добавил
+        stopUpdatingCurrentTime()
     }
 
-    private fun startUpdatingCurrentTime() { // добавил метод
+    private fun startUpdatingCurrentTime() {
         // Если уже есть активная корутина, отменяем её
         playbackJob?.cancel()
 
@@ -69,28 +69,11 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
         }
     }
 
-    private fun stopUpdatingCurrentTime() {// добавил метод
+    private fun stopUpdatingCurrentTime() {
         playbackJob?.cancel()
         playbackJob = null
     }
 
-    //    init {
-//        viewModelScope.launch {
-//            while (true) {
-//                if (playerInteractor.isPlaying()) {
-//                    _currentPlayingTime.postValue(playerInteractor.getCurrentPosition())
-//                }
-//                delay(300)
-//            }
-//        }
-//
-//        viewModelScope.launch {
-//            playerInteractor.getPlayerStateFlow()
-//                .collect { state ->
-//                    _isPlaying.postValue(state == STATE_PLAYING)
-//                }
-//        }
-//    }
     init {
         viewModelScope.launch {
             playerInteractor.getPlayerStateFlow()
