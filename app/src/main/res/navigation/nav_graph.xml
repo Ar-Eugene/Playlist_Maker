@@ -23,7 +23,11 @@
         android:id="@+id/mediatekaFragment2"
         android:name="com.example.playlist_maker.mediateca.ui.MediatekaFragment"
         android:label="fragment_mediateka"
-        tools:layout="@layout/fragment_mediateka" />
+        tools:layout="@layout/fragment_mediateka" >
+        <action
+            android:id="@+id/action_mediatekaFragment2_to_playerActivity"
+            app:destination="@id/playerActivity" />
+    </fragment>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.example.playlist_maker.settings.ui.SettingsFragment"

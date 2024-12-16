@@ -29,7 +29,7 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         // Получаем переданные данные
-        val track = intent.getSerializableExtra(EXTRA_TRACK) as? Track
+        val track = intent.getSerializableExtra(EXTRA_TRACK) as? Track?: return
             ?: return  // Используем getSerializableExtra
 
         // Установка значений на экран
@@ -63,6 +63,18 @@ class PlayerActivity : AppCompatActivity() {
         playerViewModel.preparePlayer(track.previewUrl)
         // Возвращаемся на экран "Поиск"
         backArrowButton()
+        playerViewModel.setCurrentTrack(track)
+
+        binding.heardLikeButton.setOnClickListener {
+            playerViewModel.onFavoriteClicked()
+        }
+
+        playerViewModel.isFavorite.observe(this) { isFavorite ->
+            binding.heardLikeButton.setImageResource(
+                if (isFavorite) R.drawable.favorite_heart_button
+                else R.drawable.heart_button
+            )
+        }
     }
 
     override fun onPause() {

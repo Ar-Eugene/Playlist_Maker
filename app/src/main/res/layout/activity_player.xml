@@ -154,6 +154,7 @@
 
 
     <ImageView
+        android:id="@+id/heard_like_button"
         android:layout_width="@dimen/size_23dp"
         android:layout_height="25dp"
         android:src="@drawable/heart_button"
