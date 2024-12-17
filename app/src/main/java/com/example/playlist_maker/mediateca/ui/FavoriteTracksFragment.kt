@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.playlist_maker.R
 import com.example.playlist_maker.databinding.FragmentFavoriteTracksBinding
 import com.example.playlist_maker.mediateca.ui.view_model.FavoriteTracksViewModel
 import com.example.playlist_maker.mediateca.ui.view_model.FavoritesState
@@ -21,8 +20,6 @@ class FavoriteTracksFragment : Fragment() {
     private val viewModel: FavoriteTracksViewModel by viewModel()
     private lateinit var binding: FragmentFavoriteTracksBinding
     private val favoritesTrackAdapter = TrackAdapter()
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
