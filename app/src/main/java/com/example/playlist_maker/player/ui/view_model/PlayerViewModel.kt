@@ -4,12 +4,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.playlist_maker.mediateca.domain.db.FavoritesInteractor
 import com.example.playlist_maker.player.domain.api.PlayerInteractor
+import com.example.playlist_maker.search.domain.models.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewModel() {
+class PlayerViewModel(
+    private val playerInteractor: PlayerInteractor,
+    private val favoritesInteractor: FavoritesInteractor
+) : ViewModel() {
 
     private val _currentPlayingTime = MutableLiveData(0)
     val currentPlayingTime: LiveData<Int> = _currentPlayingTime
@@ -20,7 +26,34 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
     private val _isPlaying = MutableLiveData(false)
     val isPlaying: LiveData<Boolean> = _isPlaying
 
+    private val _isFavorite = MutableLiveData<Boolean>()
+    val isFavorite: LiveData<Boolean> = _isFavorite
+
+    private var currentTrack: Track? = null
+
     private var playbackJob: Job? = null // добавил ссылки на корутину.
+
+    fun setCurrentTrack(track: Track) {
+        currentTrack = track
+        viewModelScope.launch {
+            val favoriteIds = favoritesInteractor.favoritesTracks().first().map { it.trackId }
+            _isFavorite.value = favoriteIds.contains(track.trackId)
+        }
+    }
+
+    fun onFavoriteClicked() {
+        currentTrack?.let { track ->
+            viewModelScope.launch {
+                if (_isFavorite.value == true) {
+                    favoritesInteractor.removeFavoriteTrack(track.trackId)
+                    _isFavorite.value = false
+                } else {
+                    favoritesInteractor.addFavoriteTrack(track)
+                    _isFavorite.value = true
+                }
+            }
+        }
+    }
 
     fun playbackControl() {
         val isPlaying = playerInteractor.playbackControl()
@@ -34,11 +67,22 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor) : ViewMode
     }
 
     fun preparePlayer(previewUrl: String) {
-        playerInteractor.preparePlayer(
-            previewUrl = previewUrl,
-            onPreparedCallback = { onPrepared() },
-            onCompleteCallback = { onComplete() }
-        )
+        try {
+            playerInteractor.preparePlayer(
+                previewUrl = previewUrl,
+                onPreparedCallback = { onPrepared() },
+                onCompleteCallback = { onComplete() }
+            )
+        } catch (e: IllegalStateException) {
+            _playButtonEnabled.value = false
+            _isPlaying.value = false
+            stopUpdatingCurrentTime()
+        }
+    }
+
+    fun release() {
+        stopUpdatingCurrentTime()
+        playerInteractor.release()
     }
 
     private fun onPrepared() {

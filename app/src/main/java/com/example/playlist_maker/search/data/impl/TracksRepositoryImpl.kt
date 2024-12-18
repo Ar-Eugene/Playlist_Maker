@@ -36,7 +36,8 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRep
                                     result.collectionName,
                                     result.primaryGenreName,
                                     result.releaseDate,
-                                    result.previewUrl
+                                    result.previewUrl,
+                                    result.trackId
                                 )
                             } catch (e: Exception) {
                                 null // Пропускаем невалидные объекты

@@ -22,7 +22,7 @@ class SearchHistoryRepositoryImpl(
         if (track in trackListHistory) {
             trackListHistory.remove(track)
         } else if (trackListHistory.size == 10) {
-            trackListHistory.removeLast()
+            trackListHistory.remove(trackListHistory.last())
         }
         trackListHistory.add(0, track)
         sharedPreferences.edit()

@@ -18,17 +18,23 @@ class MediaPlayerRepositoryImpl(private val mediaPlayer: MediaPlayer?) : MediaPl
         onPreparedCallback: () -> Unit,
         onCompleteCallback: () -> Unit
     ) {
-        mediaPlayer?.apply {
-            setDataSource(previewUrl)
-            prepareAsync()
-            setOnPreparedListener {
-                _playerState.value = STATE_PREPARED
-                onPreparedCallback()
+        try {
+            mediaPlayer?.apply {
+                reset()
+                setDataSource(previewUrl)
+                prepareAsync()
+                setOnPreparedListener {
+                    _playerState.value = STATE_PREPARED
+                    onPreparedCallback()
+                }
+                setOnCompletionListener {
+                    _playerState.value = STATE_PREPARED
+                    onCompleteCallback()
+                }
             }
-            setOnCompletionListener {
-                _playerState.value = STATE_PREPARED
-                onCompleteCallback()
-            }
+        } catch (e: IllegalStateException) {
+            _playerState.value = STATE_DEFAULT
+            throw e
         }
     }
 

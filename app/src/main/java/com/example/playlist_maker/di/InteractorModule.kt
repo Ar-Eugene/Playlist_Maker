@@ -1,6 +1,8 @@
 package com.example.playlist_maker.di
 
 import com.example.playlist_maker.common.ThemeInteractor
+import com.example.playlist_maker.mediateca.domain.db.FavoritesInteractor
+import com.example.playlist_maker.mediateca.domain.impl.FavoritesInteractorImpl
 import com.example.playlist_maker.player.domain.PlayerInteractorImpl
 import com.example.playlist_maker.player.domain.api.PlayerInteractor
 import com.example.playlist_maker.search.domain.interactor.SearchHistoryInteractor
@@ -27,4 +29,9 @@ val interactorModule = module {
     factory<PlayerInteractor> {
         PlayerInteractorImpl(mediaPlayerRepository = get())
     }
+
+    factory<FavoritesInteractor> {
+        FavoritesInteractorImpl(get())
+    }
+
 }
