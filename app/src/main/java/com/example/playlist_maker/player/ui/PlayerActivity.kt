@@ -16,6 +16,7 @@ import java.util.Locale
 class PlayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayerBinding
     private val playerViewModel: PlayerViewModel by viewModel()
+    private var currentTrack: Track? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,58 +24,126 @@ class PlayerActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         observeViewModel()
+        setupClickListeners()
 
-        binding.playButton.setOnClickListener {
-            playerViewModel.playbackControl()
+        // Восстанавливаем трек либо из savedInstanceState, либо из intent
+        currentTrack = if (savedInstanceState != null) {
+            savedInstanceState.getSerializable(KEY_TRACK) as? Track
+        } else {
+            intent.getSerializableExtra(EXTRA_TRACK) as? Track
         }
 
-        // Получаем переданные данные
-        val track = intent.getSerializableExtra(EXTRA_TRACK) as? Track?: return
-            ?: return  // Используем getSerializableExtra
+        currentTrack?.let { track ->
+            setupTrackInfo(track)
+            playerViewModel.setCurrentTrack(track)
+            if (savedInstanceState == null) {
+                playerViewModel.preparePlayer(track.previewUrl)
+            }
+        }
+    }
 
-        // Установка значений на экран
+    private fun setupClickListeners() {
+        with(binding) {
+            playButton.setOnClickListener {
+                playerViewModel.playbackControl()
+            }
+
+            heardLikeButton.setOnClickListener {
+                playerViewModel.onFavoriteClicked()
+            }
+
+            backArrow.setOnClickListener {
+                handleBackPress()
+            }
+        }
+    }
+
+    private fun setupTrackInfo(track: Track) {
         with(binding) {
             trackName.text = track.trackName
             trackArtist.text = track.artistName
-            textDurationValue.text =
-                SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis)
+            textDurationValue.text = SimpleDateFormat("mm:ss", Locale.getDefault())
+                .format(track.trackTimeMillis)
+
+            setupAlbumArtwork(track.artworkUrl100)
+            setupAdditionalInfo(track)
         }
-        val artworkUrl512 = track.artworkUrl100.replaceAfterLast("/", "512x512bb.jpg")
+    }
+
+    private fun setupAlbumArtwork(artworkUrl: String) {
+        val artworkUrl512 = artworkUrl.replaceAfterLast("/", "512x512bb.jpg")
         Glide.with(this)
             .load(artworkUrl512)
             .placeholder(R.drawable.error_image)
             .error(R.drawable.error_image)
             .transform(RoundedCorners(20))
             .into(binding.albumPosterImage)
+    }
+
+    private fun setupAdditionalInfo(track: Track) {
         with(binding) {
             textCountryValue.text = track.country
             textGenreValue.text = track.primaryGenreName
-            textYearValue.text = SimpleDateFormat(
-                "yyyy",
-                Locale.getDefault()
-            ).format(
-                SimpleDateFormat(
-                    "yyyy-MM-dd'T'HH:mm:ss'Z'",
-                    Locale.getDefault()
-                ).parse(track.releaseDate)!!
-            )
+            textYearValue.text = formatReleaseDate(track.releaseDate)
             textAlbumValue.text = track.collectionName
         }
-        playerViewModel.preparePlayer(track.previewUrl)
-        // Возвращаемся на экран "Поиск"
-        backArrowButton()
-        playerViewModel.setCurrentTrack(track)
+    }
 
-        binding.heardLikeButton.setOnClickListener {
-            playerViewModel.onFavoriteClicked()
-        }
+    private fun formatReleaseDate(releaseDate: String): String {
+        val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
+        val formatter = SimpleDateFormat("yyyy", Locale.getDefault())
+        return parser.parse(releaseDate)?.let { formatter.format(it) } ?: ""
+    }
 
-        playerViewModel.isFavorite.observe(this) { isFavorite ->
-            binding.heardLikeButton.setImageResource(
-                if (isFavorite) R.drawable.favorite_heart_button
-                else R.drawable.heart_button
-            )
+    private fun observeViewModel() {
+        with(playerViewModel) {
+            currentPlayingTime.observe(this@PlayerActivity) { time ->
+                binding.textTrackTimeValue.text = if (time == 0) {
+                    getString(R.string.current_time)
+                } else {
+                    SimpleDateFormat("mm:ss", Locale.getDefault()).format(time)
+                }
+            }
+
+            playButtonEnabled.observe(this@PlayerActivity) { isEnabled ->
+                binding.playButton.isEnabled = isEnabled
+            }
+
+            isPlaying.observe(this@PlayerActivity) { isPlaying ->
+                binding.playButton.setImageResource(
+                    if (isPlaying) R.drawable.pause_button else R.drawable.play_button
+                )
+            }
+
+            isFavorite.observe(this@PlayerActivity) { isFavorite ->
+                binding.heardLikeButton.setImageResource(
+                    if (isFavorite) R.drawable.favorite_heart_button
+                    else R.drawable.heart_button
+                )
+            }
         }
+    }
+
+    private fun handleBackPress() {
+        val isFromHistory = intent.getBooleanExtra(EXTRA_IS_FROM_HISTORY, false)
+        setResult(
+            RESULT_OK,
+            Intent().apply {
+                putExtra(EXTRA_IS_FROM_HISTORY, isFromHistory)
+            }
+        )
+        finish()
+    }
+
+    override fun onBackPressed() {
+        handleBackPress()
+        super.onBackPressed()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putSerializable(KEY_TRACK, currentTrack)
+        playerViewModel.pausePlayer()
     }
 
     override fun onPause() {
@@ -82,51 +151,16 @@ class PlayerActivity : AppCompatActivity() {
         playerViewModel.pausePlayer()
     }
 
-    //отвечает за подготовку MediaPlayer для воспроизведения аудиотрека.
-    override fun onBackPressed() {
-        val isFromHistory = intent.getBooleanExtra(EXTRA_IS_FROM_HISTORY, false)
-        val resultIntent = Intent().apply {
-            putExtra(EXTRA_IS_FROM_HISTORY, isFromHistory)
+    override fun onDestroy() {
+        super.onDestroy()
+        if (isFinishing) {
+            playerViewModel.release()
         }
-        setResult(RESULT_OK, resultIntent)
-        super.onBackPressed()
-    }
-
-    private fun backArrowButton() {
-        val backArrowPlayButton = binding.backArrow
-        backArrowPlayButton.setOnClickListener {
-            val isFromHistory = intent.getBooleanExtra(EXTRA_IS_FROM_HISTORY, false)
-            val resultIntent = Intent().apply {
-                putExtra(EXTRA_IS_FROM_HISTORY, isFromHistory)
-            }
-            setResult(RESULT_OK, resultIntent)
-            finish()
-        }
-    }
-
-    private fun observeViewModel() {
-        playerViewModel.currentPlayingTime.observe(this) { time ->
-            binding.textTrackTimeValue.text =
-                if (time == 0) getString(R.string.current_time)
-                else SimpleDateFormat("mm:ss", Locale.getDefault()).format(time)
-        }
-
-        playerViewModel.playButtonEnabled.observe(this) { isEnabled ->
-            binding.playButton.isEnabled = isEnabled
-        }
-
-        playerViewModel.isPlaying.observe(this) { isPlaying ->
-            if (isPlaying) {
-                binding.playButton.setImageResource(R.drawable.pause_button)
-            } else {
-                binding.playButton.setImageResource(R.drawable.play_button)
-            }
-        }
-
     }
 
     private companion object {
         const val EXTRA_TRACK = "track"
         const val EXTRA_IS_FROM_HISTORY = "isFromHistory"
+        const val KEY_TRACK = "current_track"
     }
 }

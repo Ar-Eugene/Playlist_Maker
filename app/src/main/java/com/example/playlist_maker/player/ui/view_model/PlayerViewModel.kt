@@ -12,7 +12,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class PlayerViewModel(private val playerInteractor: PlayerInteractor,private val favoritesInteractor: FavoritesInteractor) : ViewModel() {
+class PlayerViewModel(
+    private val playerInteractor: PlayerInteractor,
+    private val favoritesInteractor: FavoritesInteractor
+) : ViewModel() {
 
     private val _currentPlayingTime = MutableLiveData(0)
     val currentPlayingTime: LiveData<Int> = _currentPlayingTime
@@ -64,11 +67,22 @@ class PlayerViewModel(private val playerInteractor: PlayerInteractor,private val
     }
 
     fun preparePlayer(previewUrl: String) {
-        playerInteractor.preparePlayer(
-            previewUrl = previewUrl,
-            onPreparedCallback = { onPrepared() },
-            onCompleteCallback = { onComplete() }
-        )
+        try {
+            playerInteractor.preparePlayer(
+                previewUrl = previewUrl,
+                onPreparedCallback = { onPrepared() },
+                onCompleteCallback = { onComplete() }
+            )
+        } catch (e: IllegalStateException) {
+            _playButtonEnabled.value = false
+            _isPlaying.value = false
+            stopUpdatingCurrentTime()
+        }
+    }
+
+    fun release() {
+        stopUpdatingCurrentTime()
+        playerInteractor.release()
     }
 
     private fun onPrepared() {
