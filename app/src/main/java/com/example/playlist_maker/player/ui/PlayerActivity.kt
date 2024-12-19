@@ -139,12 +139,25 @@ class PlayerActivity : AppCompatActivity() {
         handleBackPress()
         super.onBackPressed()
     }
-
+    override fun onResume() {
+        super.onResume()
+        playerViewModel.preparePlayerIfNeeded()
+    }
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putSerializable(KEY_TRACK, currentTrack)
         playerViewModel.pausePlayer()
+        outState.putBoolean("isPlaying", playerViewModel.isPlaying.value ?: false)
     }
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        val isPlaying = savedInstanceState.getBoolean("isPlaying", false)
+        if (isPlaying) {
+            playerViewModel.playbackControl() // Запускаем воспроизведение, если было запущено
+        }
+    }
+
+
 
     override fun onPause() {
         super.onPause()

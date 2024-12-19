@@ -132,6 +132,14 @@ class PlayerViewModel(
         }
     }
 
+    fun preparePlayerIfNeeded() {
+        currentTrack?.let { track ->
+            if (!isPlaying.value!!) {
+                preparePlayer(track.previewUrl)
+            }
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         playerInteractor.release()
