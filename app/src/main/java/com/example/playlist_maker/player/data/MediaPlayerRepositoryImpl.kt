@@ -13,6 +13,8 @@ class MediaPlayerRepositoryImpl(private val mediaPlayer: MediaPlayer?) : MediaPl
 
     private val _playerState = MutableStateFlow(STATE_DEFAULT)
 
+    private val position = MutableStateFlow(0)
+
     override fun preparePlayer(
         previewUrl: String,
         onPreparedCallback: () -> Unit,
@@ -29,7 +31,11 @@ class MediaPlayerRepositoryImpl(private val mediaPlayer: MediaPlayer?) : MediaPl
                 }
                 setOnCompletionListener {
                     _playerState.value = STATE_PREPARED
+                    position.value=0
                     onCompleteCallback()
+                }
+                setOnSeekCompleteListener {
+                    start()
                 }
             }
         } catch (e: IllegalStateException) {
@@ -40,13 +46,18 @@ class MediaPlayerRepositoryImpl(private val mediaPlayer: MediaPlayer?) : MediaPl
 
     private fun startPlayer() {
         mediaPlayer?.apply {
-            start()
+            if (position.value != 0) {
+                seekTo(position.value)
+            } else {
+                start()
+            }
             _playerState.value = STATE_PLAYING
         }
     }
 
     override fun pausePlayer() {
         mediaPlayer?.apply {
+            position.value = currentPosition
             pause()
             _playerState.value = STATE_PAUSED
         }
