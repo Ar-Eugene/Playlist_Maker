@@ -1,8 +1,12 @@
-package com.example.playlist_maker.search.domain.models
+package com.example.playlist_maker.mediateca.data.db.entity
 
-import java.io.Serializable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-data class Track(
+@Entity(tableName = "track_table")
+data class TrackEntity (
+    @PrimaryKey
+    val trackId: String,
     val trackName: String,
     val artistName: String,
     val trackTimeMillis: Long,
@@ -12,8 +16,4 @@ data class Track(
     val primaryGenreName: String,
     val releaseDate: String,
     val previewUrl: String,
-    val trackId: String,
-    var isFavorite: Boolean = false
-) : Serializable
-
-
+)

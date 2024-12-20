@@ -2,47 +2,62 @@ package com.example.playlist_maker.player.data
 
 import android.media.MediaPlayer
 import com.example.playlist_maker.player.domain.api.MediaPlayerRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 
 class MediaPlayerRepositoryImpl(private val mediaPlayer: MediaPlayer?) : MediaPlayerRepository {
 
     private val _playerState = MutableStateFlow(STATE_DEFAULT)
+
+    private val position = MutableStateFlow(0)
 
     override fun preparePlayer(
         previewUrl: String,
         onPreparedCallback: () -> Unit,
         onCompleteCallback: () -> Unit
     ) {
-        mediaPlayer?.apply {
-            setDataSource(previewUrl)
-            prepareAsync()
-            setOnPreparedListener {
-                _playerState.value = STATE_PREPARED
-                onPreparedCallback()
+        try {
+            mediaPlayer?.apply {
+                reset()
+                setDataSource(previewUrl)
+                prepareAsync()
+                setOnPreparedListener {
+                    _playerState.value = STATE_PREPARED
+                    onPreparedCallback()
+                }
+                setOnCompletionListener {
+                    _playerState.value = STATE_PREPARED
+                    onCompleteCallback()
+                    position.value = 0
+                }
+                setOnSeekCompleteListener {
+                    start()
+                }
             }
-            setOnCompletionListener {
-                _playerState.value = STATE_PREPARED
-                onCompleteCallback()
-            }
+        } catch (e: IllegalStateException) {
+            _playerState.value = STATE_DEFAULT
+            throw e
         }
     }
 
     private fun startPlayer() {
         mediaPlayer?.apply {
-            start()
+            if (position.value != 0 && position.value < duration) {
+                seekTo(position.value)
+            } else {
+                start()
+            }
             _playerState.value = STATE_PLAYING
         }
     }
 
     override fun pausePlayer() {
         mediaPlayer?.apply {
-            pause()
-            _playerState.value = STATE_PAUSED
+            if (isPlaying) {
+                position.value = currentPosition
+                pause()
+                _playerState.value = STATE_PAUSED
+            }
         }
     }
 
