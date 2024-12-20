@@ -2,12 +2,8 @@ package com.example.playlist_maker.player.data
 
 import android.media.MediaPlayer
 import com.example.playlist_maker.player.domain.api.MediaPlayerRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 
 class MediaPlayerRepositoryImpl(private val mediaPlayer: MediaPlayer?) : MediaPlayerRepository {
 
@@ -31,8 +27,8 @@ class MediaPlayerRepositoryImpl(private val mediaPlayer: MediaPlayer?) : MediaPl
                 }
                 setOnCompletionListener {
                     _playerState.value = STATE_PREPARED
-                    position.value=0
                     onCompleteCallback()
+                    position.value = 0
                 }
                 setOnSeekCompleteListener {
                     start()
@@ -46,7 +42,7 @@ class MediaPlayerRepositoryImpl(private val mediaPlayer: MediaPlayer?) : MediaPl
 
     private fun startPlayer() {
         mediaPlayer?.apply {
-            if (position.value != 0) {
+            if (position.value != 0 && position.value < duration) {
                 seekTo(position.value)
             } else {
                 start()
@@ -57,9 +53,11 @@ class MediaPlayerRepositoryImpl(private val mediaPlayer: MediaPlayer?) : MediaPl
 
     override fun pausePlayer() {
         mediaPlayer?.apply {
-            position.value = currentPosition
-            pause()
-            _playerState.value = STATE_PAUSED
+            if (isPlaying) {
+                position.value = currentPosition
+                pause()
+                _playerState.value = STATE_PAUSED
+            }
         }
     }
 
