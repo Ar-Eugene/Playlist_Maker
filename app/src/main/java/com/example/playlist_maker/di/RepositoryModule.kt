@@ -3,7 +3,9 @@ package com.example.playlist_maker.di
 import com.example.playlist_maker.common.ThemeRepository
 import com.example.playlist_maker.mediateca.data.FavoritesRepositoryImpl
 import com.example.playlist_maker.mediateca.data.converter.TrackDbConverter
+import com.example.playlist_maker.mediateca.data.impl.PlaylistRepositoryImpl
 import com.example.playlist_maker.mediateca.domain.db.FavoritesRepository
+import com.example.playlist_maker.mediateca.domain.db.PlaylistRepository
 import com.example.playlist_maker.player.data.MediaPlayerRepositoryImpl
 import com.example.playlist_maker.player.domain.api.MediaPlayerRepository
 import com.example.playlist_maker.search.data.impl.SearchHistoryRepositoryImpl
@@ -35,5 +37,9 @@ val repositoryModule = module {
 
     single<FavoritesRepository> {
         FavoritesRepositoryImpl(get(), get())
+    }
+
+    factory<PlaylistRepository> {
+        PlaylistRepositoryImpl(get())
     }
 }
