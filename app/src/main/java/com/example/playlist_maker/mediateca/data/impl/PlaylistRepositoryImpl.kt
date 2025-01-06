@@ -49,20 +49,21 @@ class PlaylistRepositoryImpl(
         )
         playlistDatabase.playlistDao().updatePlaylist(entity)
     }
-    override suspend fun addTrackToPlaylist(trackId: Int, playlistId: Int) {
+    override suspend fun addTrackToPlaylist(trackId: Int, playlistId: Int): Boolean {
         playlistDatabase.playlistDao().getPlaylists().first().find { it.id == playlistId }?.let { playlist ->
             val currentTracks = playlist.trackIds?.split(",")?.toMutableList() ?: mutableListOf()
+
             if (!currentTracks.contains(trackId.toString())) {
                 currentTracks.add(trackId.toString())
-                updatePlaylist(Playlist(
-                    id = playlist.id,
-                    title = playlist.title,
-                    description = playlist.description,
-                    imagePath = playlist.imagePath?.let { Uri.parse(it) },
+                val updatedPlaylist = playlist.copy(
                     trackIds = currentTracks.joinToString(","),
                     trackAmount = playlist.trackAmount + 1
-                ))
+                )
+                playlistDatabase.playlistDao().updatePlaylist(updatedPlaylist)
+                return true
             }
+            return false
         }
+        return false
     }
 }

@@ -52,4 +52,8 @@ class CreatePlaylistViewModel(
             false
         }
     }
+
+    fun getPlaylistTitle(): String {
+        return playlistTitle
+    }
 }

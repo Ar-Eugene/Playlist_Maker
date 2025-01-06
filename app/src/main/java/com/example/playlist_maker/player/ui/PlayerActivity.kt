@@ -2,6 +2,7 @@ package com.example.playlist_maker.player.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -59,16 +60,36 @@ class PlayerActivity : AppCompatActivity() {
             adapter = bottomSheetPlaylistAdapter
             layoutManager = LinearLayoutManager(this@PlayerActivity)
         }
+
         bottomSheetPlaylistAdapter.setOnItemClickListener { playlist ->
             playerViewModel.addTrackToPlaylist(playlist.id)
-            bottomSheetContainer.state = BottomSheetBehavior.STATE_HIDDEN
-            // Можно добавить Toast с уведомлением об успешном добавлении
         }
     }
 
     private fun setupObservers() {
         playerViewModel.playlists.observe(this) { playlists ->
             bottomSheetPlaylistAdapter.submitList(playlists)
+        }
+
+        playerViewModel.addToPlaylistResult.observe(this) { result ->
+            when (result) {
+                is PlayerViewModel.AddToPlaylistResult.Added -> {
+                    bottomSheetContainer.state = BottomSheetBehavior.STATE_HIDDEN
+                    Toast.makeText(
+                        this,
+                        getString(R.string.added_to_playlist, result.playlistName),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                is PlayerViewModel.AddToPlaylistResult.AlreadyExists -> {
+                    // Не закрываем BottomSheet
+                    Toast.makeText(
+                        this,
+                        getString(R.string.track_already_in_playlist, result.playlistName),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
         }
     }
 

@@ -34,6 +34,9 @@ class PlayerViewModel(
     private val _playlists = MutableLiveData<List<Playlist>>()
     val playlists: LiveData<List<Playlist>> = _playlists
 
+    private val _addToPlaylistResult = MutableLiveData<AddToPlaylistResult>()
+    val addToPlaylistResult: LiveData<AddToPlaylistResult> = _addToPlaylistResult
+
     private var currentTrack: Track? = null
 
     private var playbackJob: Job? = null // добавил ссылки на корутину.
@@ -62,7 +65,13 @@ class PlayerViewModel(
     fun addTrackToPlaylist(playlistId: Int) {
         currentTrack?.let { track ->
             viewModelScope.launch {
-                playlistInteractor.addTrackToPlaylist(track.trackId.toInt(), playlistId)
+                val wasAdded = playlistInteractor.addTrackToPlaylist(track.trackId.toInt(), playlistId)
+                val playlist = playlists.value?.find { it.id == playlistId }
+                _addToPlaylistResult.value = if (wasAdded) {
+                    AddToPlaylistResult.Added(playlist?.title ?: "")
+                } else {
+                    AddToPlaylistResult.AlreadyExists(playlist?.title ?: "")
+                }
             }
         }
     }
@@ -178,7 +187,10 @@ class PlayerViewModel(
         playerInteractor.release()
         stopUpdatingCurrentTime()// добавил
     }
-
+    sealed class AddToPlaylistResult {
+        data class Added(val playlistName: String) : AddToPlaylistResult()
+        data class AlreadyExists(val playlistName: String) : AddToPlaylistResult()
+    }
     private companion object {
         const val STATE_PLAYING = 2
     }

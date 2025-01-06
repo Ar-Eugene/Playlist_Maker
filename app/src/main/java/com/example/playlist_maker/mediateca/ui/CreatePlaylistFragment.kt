@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
@@ -80,6 +81,8 @@ class CreatePlaylistFragment : Fragment() {
         binding.btnCreate.setOnClickListener {
             lifecycleScope.launch {
                 if (viewModel.createPlaylist()) {
+                    val message = getString(R.string.playlist_created_message, viewModel.getPlaylistTitle())
+                    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
                     findNavController().navigateUp()
                 }
             }
