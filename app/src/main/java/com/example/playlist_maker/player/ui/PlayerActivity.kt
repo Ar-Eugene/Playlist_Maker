@@ -3,12 +3,16 @@ package com.example.playlist_maker.player.ui
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlist_maker.R
 import com.example.playlist_maker.databinding.ActivityPlayerBinding
+import com.example.playlist_maker.main.ui.MainActivity
+import com.example.playlist_maker.main.ui.MainActivity.Companion.EXTRA_NAVIGATE_TO_CREATE_PLAYLIST
 import com.example.playlist_maker.player.ui.view_model.PlayerViewModel
 import com.example.playlist_maker.search.domain.models.Track
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -17,12 +21,21 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayerBinding
     private val playerViewModel: PlayerViewModel by viewModel()
     private var currentTrack: Track? = null
+    private val bottomSheetPlaylistAdapter = BottomSheetPlaylistAdapter()
+
+    private val bottomSheetContainer by lazy {
+        BottomSheetBehavior.from(binding.bottomSheet)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
+        bottomSheetContainer.state = BottomSheetBehavior.STATE_HIDDEN
+        setupBottomSheet()
+        setupObservers()
         observeViewModel()
         setupClickListeners()
 
@@ -41,6 +54,23 @@ class PlayerActivity : AppCompatActivity() {
             }
         }
     }
+    private fun setupBottomSheet() {
+        binding.bottomList.apply {
+            adapter = bottomSheetPlaylistAdapter
+            layoutManager = LinearLayoutManager(this@PlayerActivity)
+        }
+        bottomSheetPlaylistAdapter.setOnItemClickListener { playlist ->
+            playerViewModel.addTrackToPlaylist(playlist.id)
+            bottomSheetContainer.state = BottomSheetBehavior.STATE_HIDDEN
+            // Можно добавить Toast с уведомлением об успешном добавлении
+        }
+    }
+
+    private fun setupObservers() {
+        playerViewModel.playlists.observe(this) { playlists ->
+            bottomSheetPlaylistAdapter.submitList(playlists)
+        }
+    }
 
     private fun setupClickListeners() {
         with(binding) {
@@ -55,7 +85,22 @@ class PlayerActivity : AppCompatActivity() {
             backArrow.setOnClickListener {
                 handleBackPress()
             }
+            newPlaylist.setOnClickListener {
+                navigateToCreatePlaylist()
+            }
+            addToPlaylistButton.setOnClickListener {
+                // Показываем BottomSheet при нажатии на кнопку
+                bottomSheetContainer.state = BottomSheetBehavior.STATE_COLLAPSED
+            }
         }
+    }
+
+    private fun navigateToCreatePlaylist() {
+        val intent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra(EXTRA_NAVIGATE_TO_CREATE_PLAYLIST, true)
+        }
+        startActivity(intent)
     }
 
     private fun setupTrackInfo(track: Track) {
@@ -139,16 +184,19 @@ class PlayerActivity : AppCompatActivity() {
         handleBackPress()
         super.onBackPressed()
     }
+
     override fun onResume() {
         super.onResume()
         playerViewModel.preparePlayerIfNeeded()
     }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putSerializable(KEY_TRACK, currentTrack)
         playerViewModel.pausePlayer()
         outState.putBoolean("isPlaying", playerViewModel.isPlaying.value ?: false)
     }
+
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         val isPlaying = savedInstanceState.getBoolean("isPlaying", false)
@@ -156,7 +204,6 @@ class PlayerActivity : AppCompatActivity() {
             playerViewModel.playbackControl() // Запускаем воспроизведение, если было запущено
         }
     }
-
 
 
     override fun onPause() {

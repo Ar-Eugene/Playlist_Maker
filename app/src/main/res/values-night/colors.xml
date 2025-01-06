@@ -10,5 +10,5 @@
     <color name="rounded_background">@color/white</color>
     <color name="custom_cursor">@color/blue</color>
     <color name="transparent_background_grey_player">@color/grey_background</color>
-
+    <color name="playlist_selector_edi">@color/white</color>
 </resources>

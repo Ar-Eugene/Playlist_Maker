@@ -6,6 +6,7 @@ import com.example.playlist_maker.mediateca.data.db.entity.PlaylistEntity
 import com.example.playlist_maker.mediateca.domain.db.PlaylistRepository
 import com.example.playlist_maker.mediateca.domain.models.Playlist
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class PlaylistRepositoryImpl(
@@ -47,5 +48,21 @@ class PlaylistRepositoryImpl(
             trackAmount = playlist.trackAmount
         )
         playlistDatabase.playlistDao().updatePlaylist(entity)
+    }
+    override suspend fun addTrackToPlaylist(trackId: Int, playlistId: Int) {
+        playlistDatabase.playlistDao().getPlaylists().first().find { it.id == playlistId }?.let { playlist ->
+            val currentTracks = playlist.trackIds?.split(",")?.toMutableList() ?: mutableListOf()
+            if (!currentTracks.contains(trackId.toString())) {
+                currentTracks.add(trackId.toString())
+                updatePlaylist(Playlist(
+                    id = playlist.id,
+                    title = playlist.title,
+                    description = playlist.description,
+                    imagePath = playlist.imagePath?.let { Uri.parse(it) },
+                    trackIds = currentTracks.joinToString(","),
+                    trackAmount = playlist.trackAmount + 1
+                ))
+            }
+        }
     }
 }

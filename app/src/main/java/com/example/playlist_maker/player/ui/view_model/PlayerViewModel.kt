@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlist_maker.mediateca.domain.db.FavoritesInteractor
+import com.example.playlist_maker.mediateca.domain.db.PlaylistInteractor
+import com.example.playlist_maker.mediateca.domain.models.Playlist
 import com.example.playlist_maker.player.domain.api.PlayerInteractor
 import com.example.playlist_maker.search.domain.models.Track
 import kotlinx.coroutines.Job
@@ -14,7 +16,8 @@ import kotlinx.coroutines.launch
 
 class PlayerViewModel(
     private val playerInteractor: PlayerInteractor,
-    private val favoritesInteractor: FavoritesInteractor
+    private val favoritesInteractor: FavoritesInteractor,
+    private val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
 
     private val _currentPlayingTime = MutableLiveData(0)
@@ -28,11 +31,41 @@ class PlayerViewModel(
 
     private val _isFavorite = MutableLiveData<Boolean>()
     val isFavorite: LiveData<Boolean> = _isFavorite
+    private val _playlists = MutableLiveData<List<Playlist>>()
+    val playlists: LiveData<List<Playlist>> = _playlists
 
     private var currentTrack: Track? = null
 
     private var playbackJob: Job? = null // добавил ссылки на корутину.
 
+    init {
+        viewModelScope.launch {
+            playerInteractor.getPlayerStateFlow()
+                .collect { state ->
+                    _isPlaying.postValue(state == STATE_PLAYING)
+                    if (state == STATE_PLAYING) {
+                        startUpdatingCurrentTime()
+                    } else {
+                        stopUpdatingCurrentTime()
+                    }
+                }
+        }
+
+        // Загрузка плейлистов
+        viewModelScope.launch {
+            playlistInteractor.getPlaylists().collect { playlistsList ->
+                _playlists.value = playlistsList
+            }
+        }
+    }
+
+    fun addTrackToPlaylist(playlistId: Int) {
+        currentTrack?.let { track ->
+            viewModelScope.launch {
+                playlistInteractor.addTrackToPlaylist(track.trackId.toInt(), playlistId)
+            }
+        }
+    }
     fun setCurrentTrack(track: Track) {
         currentTrack = track
         viewModelScope.launch {

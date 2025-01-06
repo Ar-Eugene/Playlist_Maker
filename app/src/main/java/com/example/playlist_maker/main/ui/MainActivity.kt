@@ -2,6 +2,7 @@ package com.example.playlist_maker.main.ui
 
 import MainViewModel
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
@@ -22,6 +23,29 @@ class MainActivity : AppCompatActivity() {
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
         bottomNavigationView.setupWithNavController(navController)
 
+        if (savedInstanceState == null && intent.getBooleanExtra(
+                EXTRA_NAVIGATE_TO_CREATE_PLAYLIST,
+                false
+            )
+        ) {
+            navController.navigate(R.id.createPlaylistFragment)
+        }
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.createPlaylistFragment -> {
+                    bottomNavigationView.visibility = View.GONE
+                }
 
+                else -> {
+                    bottomNavigationView.visibility = View.VISIBLE
+                }
+            }
+        }
+
+
+    }
+
+    companion object {
+        const val EXTRA_NAVIGATE_TO_CREATE_PLAYLIST = "navigate_to_create_playlist"
     }
 }
