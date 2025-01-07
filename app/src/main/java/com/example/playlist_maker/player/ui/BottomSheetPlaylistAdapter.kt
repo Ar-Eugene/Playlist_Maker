@@ -58,8 +58,7 @@ class BottomSheetPlaylistAdapter : ListAdapter<Playlist, BottomSheetPlaylistAdap
                 if (playlist.imagePath != null && hasPermission) {
                     Glide.with(context)
                         .load(playlist.imagePath)
-                        .apply(RequestOptions().transform(RoundedCorners(8)))
-                        .override(45, 45)
+                        .centerCrop()
                         .into(miniMusicAlbumPicture)
                 } else {
                     miniMusicAlbumPicture.setImageResource(R.drawable.error_image)
