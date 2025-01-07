@@ -52,7 +52,7 @@
     <string name="newPlaylist">"Новый плейлист "</string>
     <string name="playlist_name_Input_hint">Название*</string>
     <string name="playlist_description_Input_hint">Описание</string>
-    <string name="create">Создать\n</string>
+    <string name="create">Создать</string>
     <string name="dialog_title_finish_creation">Завершить создание плейлиста?</string>
     <string name="dialog_message_unsaved_data">Все несохраненные данные будут потеряны</string>
     <string name="dialog_button_finish">Завершить</string>

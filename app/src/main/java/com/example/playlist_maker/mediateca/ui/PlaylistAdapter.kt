@@ -50,9 +50,8 @@ class PlaylistAdapter : ListAdapter<Playlist, PlaylistAdapter.PlaylistViewHolder
                 if (playlist.imagePath != null && hasPermission) {
                     Glide.with(context)
                         .load(playlist.imagePath)
-                        .apply(RequestOptions().transform(RoundedCorners(8))) // Применение скругления углов
-                        .override(160, 160) // Установка размера
-                        .into(bigNameOfTheSong)
+                        .centerCrop()
+                        .into(binding.bigNameOfTheSong)
                 } else {
                     bigNameOfTheSong.setImageResource(R.drawable.error_image)
                 }
