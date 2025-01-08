@@ -5,13 +5,12 @@
     android:layout_height="wrap_content"
     android:clickable="true"
     android:focusable="true"
-    android:layout_marginBottom="@dimen/size_16dp"
     android:background="?attr/ColorWhiteOrBlack"
     android:orientation="vertical">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/big_name_of_the_song"
-            android:layout_width="160dp"
+            android:layout_width="match_parent"
             android:layout_height="160dp"
             android:scaleType="centerCrop"
             app:shapeAppearanceOverlay="@style/RoundedImageStyle"

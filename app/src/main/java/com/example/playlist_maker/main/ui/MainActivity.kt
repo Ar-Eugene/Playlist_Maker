@@ -28,7 +28,10 @@ class MainActivity : AppCompatActivity() {
                 false
             )
         ) {
-            navController.navigate(R.id.createPlaylistFragment)
+            val bundle = Bundle().apply {
+                putBoolean("flagKey", true) // Set your desired flag value
+            }
+            navController.navigate(R.id.createPlaylistFragment, bundle)
         }
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {

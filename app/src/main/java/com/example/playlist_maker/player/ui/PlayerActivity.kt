@@ -2,6 +2,8 @@ package com.example.playlist_maker.player.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -107,7 +109,12 @@ class PlayerActivity : AppCompatActivity() {
                 handleBackPress()
             }
             newPlaylist.setOnClickListener {
-                navigateToCreatePlaylist()
+                bottomSheetContainer.state = BottomSheetBehavior.STATE_HIDDEN
+
+                // Используем Handler для небольшой задержки
+                Handler(Looper.getMainLooper()).postDelayed({
+                    navigateToCreatePlaylist()
+                }, 180) // Задержка в 180 миллисекунд
             }
             addToPlaylistButton.setOnClickListener {
                 // Показываем BottomSheet при нажатии на кнопку
@@ -118,7 +125,7 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun navigateToCreatePlaylist() {
         val intent = Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+//            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             putExtra(EXTRA_NAVIGATE_TO_CREATE_PLAYLIST, true)
         }
         startActivity(intent)

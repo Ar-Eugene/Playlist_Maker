@@ -1,5 +1,6 @@
 package com.example.playlist_maker.mediateca.ui
 
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.playlist_maker.R
 import com.example.playlist_maker.databinding.FragmentPlaylistBinding
 import com.example.playlist_maker.mediateca.ui.view_model.PlaylistViewModel
@@ -43,6 +45,7 @@ class PlaylistFragment : Fragment() {
         binding.recyclerView.apply {
             adapter = playlistAdapter
             layoutManager = GridLayoutManager(requireContext(), 2, GridLayoutManager.VERTICAL, false)
+            addItemDecoration(GridItemDecoration(8))
         }
     }
 
@@ -65,5 +68,24 @@ class PlaylistFragment : Fragment() {
 
     companion object {
         fun newInstance() = PlaylistFragment()
+    }
+}
+
+
+class GridItemDecoration(private val space: Int) : RecyclerView.ItemDecoration() {
+
+    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+        val layoutManager = parent.layoutManager as? GridLayoutManager ?: return
+        val position = parent.getChildAdapterPosition(view)
+        val spanCount = layoutManager.spanCount
+
+        // горизонтальные отступы. не будут добавлены для первой позиции слева и для последней позиции справа
+        outRect.left = if (position % spanCount == 0) 0 else space
+        outRect.right = if (position % spanCount == spanCount - 1) 0 else space
+
+        // вертикальные отступы. не будут добавлены для первого ряда сверху и для последнего ряда снизу
+        outRect.top = if (position < spanCount) 0 else space
+        outRect.bottom = space
+
     }
 }

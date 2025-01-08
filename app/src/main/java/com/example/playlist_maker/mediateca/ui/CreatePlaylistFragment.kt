@@ -3,6 +3,8 @@ package com.example.playlist_maker.mediateca.ui
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -25,6 +27,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class CreatePlaylistFragment : Fragment() {
     private lateinit var binding: FragmentCreatePlaylistBinding
     private val viewModel: CreatePlaylistViewModel by viewModel()
+
+    private var isPlaylistFlag = false
 
     private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
@@ -83,7 +87,12 @@ class CreatePlaylistFragment : Fragment() {
                 if (viewModel.createPlaylist()) {
                     val message = getString(R.string.playlist_created_message, viewModel.getPlaylistTitle())
                     Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-                    findNavController().navigateUp()
+                    val flag = arguments?.getBoolean("flagKey", false) ?: false
+                    if (flag) {
+                        requireActivity().finish()
+                    } else {
+                        findNavController().navigateUp()
+                    }
                 }
             }
         }
@@ -106,6 +115,42 @@ class CreatePlaylistFragment : Fragment() {
             }
             override fun afterTextChanged(s: Editable?) {}
         })
+
+        val states = arrayOf(
+            intArrayOf(android.R.attr.state_focused),
+            intArrayOf(-android.R.attr.state_enabled),
+            intArrayOf()
+        )
+
+        binding.name.editText?.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus) {
+                val text = binding.name.editText?.text.toString()
+                val hintColor = if (text.isNotBlank()) Color.BLUE else Color.GRAY
+                val colors = intArrayOf(
+                    Color.BLUE,
+                    Color.GRAY,
+                    hintColor
+                )
+                val colorStateList = ColorStateList(states, colors)
+                binding.name.setBoxStrokeColorStateList(colorStateList)
+                binding.name.defaultHintTextColor = ColorStateList.valueOf(hintColor)
+            }
+        }
+
+        binding.description.editText?.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus) {
+                val text = binding.description.editText?.text.toString()
+                val hintColor = if (text.isNotBlank()) Color.BLUE else Color.GRAY
+                val colors = intArrayOf(
+                    Color.BLUE,
+                    Color.GRAY,
+                    hintColor
+                )
+                val colorStateList = ColorStateList(states, colors)
+                binding.description.setBoxStrokeColorStateList(colorStateList)
+                binding.description.defaultHintTextColor = ColorStateList.valueOf(hintColor)
+            }
+        }
     }
 
     private fun observeChanges() {
@@ -119,7 +164,12 @@ class CreatePlaylistFragment : Fragment() {
             if (hasChanges) {
                 showExitConfirmationDialog()
             } else {
-                findNavController().navigateUp()
+                val flag = arguments?.getBoolean("flagKey", false) ?: false
+                if (flag) {
+                    requireActivity().finish()
+                } else {
+                    findNavController().navigateUp()
+                }
             }
         }
     }
@@ -129,7 +179,12 @@ class CreatePlaylistFragment : Fragment() {
             .setTitle(R.string.dialog_title_finish_creation)
             .setMessage(R.string.dialog_message_unsaved_data)
             .setPositiveButton(R.string.dialog_button_finish) { _, _ ->
-                findNavController().navigateUp()
+                val flag = arguments?.getBoolean("flagKey", false) ?: false
+                if (flag) {
+                    requireActivity().finish()
+                } else {
+                    findNavController().navigateUp()
+                }
             }
             .setNegativeButton(R.string.dialog_button_cancel) { dialog, _ ->
                 dialog.dismiss()
