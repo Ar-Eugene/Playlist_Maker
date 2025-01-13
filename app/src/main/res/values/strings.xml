@@ -62,6 +62,10 @@
     <string name="added_to_playlist">Добавлено в плейлист %1$s</string>
     <string name="track_already_in_playlist">Трек уже добавлен в плейлист %1$s</string>
     <string name="playlist_created_message">Плейлист %s создан</string>
+    <string name="there_are_no_tracks">В этом плейлисте нет треков</string>
+    <string name="share_playlist">Поделиться</string>
+    <string name="edit_playlist">Редактировать информацию</string>
+    <string name="delete_playlist">Удалить плейлист</string>
 
 
 </resources>
