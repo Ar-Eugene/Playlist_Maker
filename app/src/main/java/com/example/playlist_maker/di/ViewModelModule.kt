@@ -2,6 +2,7 @@ package com.example.playlist_maker.di
 
 import MainViewModel
 import com.example.playlist_maker.mediateca.ui.view_model.CreatePlaylistViewModel
+import com.example.playlist_maker.mediateca.ui.view_model.EditPlaylistViewModel
 import com.example.playlist_maker.mediateca.ui.view_model.FavoriteTracksViewModel
 import com.example.playlist_maker.mediateca.ui.view_model.PlaylistViewModel
 import com.example.playlist_maker.player.ui.view_model.PlayerViewModel
@@ -38,6 +39,10 @@ val viewModelModule = module {
 
     viewModel {
         CreatePlaylistViewModel(get())
+    }
+
+    viewModel {
+        EditPlaylistViewModel(get())
     }
 
 }

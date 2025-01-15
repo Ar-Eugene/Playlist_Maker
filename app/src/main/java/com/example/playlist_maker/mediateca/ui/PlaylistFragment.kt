@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlist_maker.R
 import com.example.playlist_maker.databinding.FragmentPlaylistBinding
+import com.example.playlist_maker.mediateca.domain.models.Playlist
 import com.example.playlist_maker.mediateca.ui.view_model.PlaylistViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -41,12 +42,20 @@ class PlaylistFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        playlistAdapter = PlaylistAdapter()
+        playlistAdapter = PlaylistAdapter{ playlist ->
+            onPlaylistClicked(playlist) // Обработка клика
+        }
         binding.recyclerView.apply {
             adapter = playlistAdapter
             layoutManager = GridLayoutManager(requireContext(), 2, GridLayoutManager.VERTICAL, false)
             addItemDecoration(GridItemDecoration(8))
         }
+    }
+    private fun onPlaylistClicked(playlist: Playlist) {
+        val bundle = Bundle().apply {
+            putParcelable("playlist_key", playlist)
+        }
+        findNavController().navigate(R.id.action_mediatekaFragment2_to_editPlaylistFragment, bundle)
     }
 
     private fun setupClickListeners() {
