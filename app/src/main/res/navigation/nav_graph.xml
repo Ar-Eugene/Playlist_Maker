@@ -48,5 +48,9 @@
         android:id="@+id/editPlaylistFragment"
         android:name="com.example.playlist_maker.mediateca.ui.EditPlaylistFragment"
         android:label="fragment_edit_playlist"
-        tools:layout="@layout/fragment_edit_playlist" />
+        tools:layout="@layout/fragment_edit_playlist" >
+        <action
+            android:id="@+id/action_editPlaylistFragment_to_createPlaylistFragment"
+            app:destination="@id/createPlaylistFragment" />
+    </fragment>
 </navigation>

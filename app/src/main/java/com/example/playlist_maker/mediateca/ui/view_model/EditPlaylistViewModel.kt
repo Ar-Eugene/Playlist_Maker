@@ -34,9 +34,48 @@ class EditPlaylistViewModel(
         _playlist.value = playlist
         loadPlaylistTracks(playlist)
     }
+
     fun refreshPlaylistTracks() {
         _playlist.value?.let { playlist ->
             loadPlaylistTracks(playlist)
         }
+    }
+
+    fun refreshPlaylistData() {
+        viewModelScope.launch {
+            _playlist.value?.id?.let { currentPlaylistId ->
+                playlistInteractor.getPlaylistById(currentPlaylistId)?.let { updatedPlaylist ->
+                    _playlist.value = updatedPlaylist
+                    refreshPlaylistTracks()
+                }
+            }
+        }
+    }
+
+    fun deleteTrackFromPlaylist(trackId: String) {
+        viewModelScope.launch {
+            _playlist.value?.let { currentPlaylist ->
+                val trackIds =
+                    currentPlaylist.trackIds?.split(",")?.toMutableList() ?: mutableListOf()
+                trackIds.remove(trackId)
+
+                val newTrackIds = trackIds.joinToString(",")
+                val newAmount = currentPlaylist.trackAmount - 1
+
+                playlistInteractor.updatePlaylistTracks(
+                    playlistId = currentPlaylist.id,
+                    newTrackIds = newTrackIds,
+                    newAmount = newAmount
+                )
+
+                _playlist.value = currentPlaylist.copy(
+                    trackIds = newTrackIds,
+                    trackAmount = newAmount
+                )
+
+                refreshPlaylistTracks()
+            }
+        }
+
     }
 }

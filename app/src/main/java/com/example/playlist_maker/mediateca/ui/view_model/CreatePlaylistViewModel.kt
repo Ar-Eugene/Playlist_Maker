@@ -16,6 +16,20 @@ class CreatePlaylistViewModel(
     private var selectedImagePath: Uri? = null
     private var playlistTitle: String = ""
     private var playlistDescription: String = ""
+    private var editingPlaylistId: Int? = null
+    private var currentTrackIds: String? = null
+    private var currentTrackAmount: Int = 0
+
+
+    fun initializeWithPlaylist(playlist: Playlist) {
+        editingPlaylistId = playlist.id
+        playlistTitle = playlist.title
+        playlistDescription = playlist.description ?: ""
+        selectedImagePath = playlist.imagePath
+        currentTrackIds = playlist.trackIds
+        currentTrackAmount = playlist.trackAmount
+        _hasChanges.value = false
+    }
 
     fun setChangesMade(changesMade: Boolean) {
         _hasChanges.value = changesMade
@@ -52,8 +66,25 @@ class CreatePlaylistViewModel(
             false
         }
     }
+    suspend fun updatePlaylist(): Boolean {
+        return try {
+            val updatedPlaylist = Playlist(
+                id = editingPlaylistId ?: return false,
+                title = playlistTitle,
+                description = playlistDescription,
+                imagePath = selectedImagePath,
+                trackIds = currentTrackIds,
+                trackAmount = currentTrackAmount
+            )
+            playlistInteractor.updatePlaylist(updatedPlaylist)
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
 
     fun getPlaylistTitle(): String {
         return playlistTitle
     }
+    fun isEditMode(): Boolean = editingPlaylistId != null
 }

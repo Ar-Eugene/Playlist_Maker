@@ -95,6 +95,22 @@ class PlaylistRepositoryImpl(
             Log.d("Repository", "Mapped to tracks: ${it.map { track -> track.trackId }}")
         }
     }
+    override suspend fun getPlaylistById(playlistId: Int): Playlist? {
+        return playlistDatabase.playlistDao().getPlaylistById(playlistId)?.let { entity ->
+            Playlist(
+                id = entity.id,
+                title = entity.title,
+                description = entity.description,
+                imagePath = entity.imagePath?.let { Uri.parse(it) },
+                trackIds = entity.trackIds,
+                trackAmount = entity.trackAmount
+            )
+        }
+    }
+    override suspend fun updatePlaylistTracks(playlistId: Int, newTrackIds: String, newAmount: Int) {
+        playlistDatabase.playlistDao().updatePlaylistTracks(playlistId, newTrackIds, newAmount)
+
+    }
 
 
-}
+    }

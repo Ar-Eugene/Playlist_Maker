@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,8 +15,10 @@ import com.example.playlist_maker.databinding.FragmentEditPlaylistBinding
 import com.example.playlist_maker.databinding.FragmentFavoriteTracksBinding
 import com.example.playlist_maker.mediateca.domain.models.Playlist
 import com.example.playlist_maker.mediateca.ui.view_model.EditPlaylistViewModel
+import com.example.playlist_maker.search.domain.models.Track
 import com.example.playlist_maker.search.ui.TrackAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -25,9 +28,7 @@ class EditPlaylistFragment : Fragment() {
     private val viewModel: EditPlaylistViewModel by viewModel()
     private lateinit var trackAdapter: TrackAdapter
 
-    private val bottomSheetContainer by lazy {
-        BottomSheetBehavior.from(binding.menuBottomSheet)
-    }
+    private lateinit var bottomSheetContainer: BottomSheetBehavior<LinearLayout>
 
 
     override fun onCreateView(
@@ -41,7 +42,9 @@ class EditPlaylistFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        bottomSheetContainer.state = BottomSheetBehavior.STATE_EXPANDED
+        bottomSheetContainer = BottomSheetBehavior.from(binding.trackListBottomSheet)
+        bottomSheetContainer.state = BottomSheetBehavior.STATE_COLLAPSED
+
         binding.backArrow.setOnClickListener {
             // Используем NavController для возврата на предыдущий фрагмент
             findNavController().navigateUp()
@@ -59,24 +62,62 @@ class EditPlaylistFragment : Fragment() {
         }
         setupRecyclerView()
         setupObservers()
+        setupClickListeners()
 
     }
+
+    private fun setupClickListeners(){
+        binding.menuBottomSheetEditPlaylist.setOnClickListener{
+            val bundle = Bundle().apply {
+                putParcelable("edit_playlist",viewModel.playlist.value)
+                putBoolean("is_edit_mode", true)
+            }
+            findNavController().navigate(R.id.action_editPlaylistFragment_to_createPlaylistFragment,bundle)
+        }
+    }
+
     private fun setupRecyclerView() {
-        trackAdapter = TrackAdapter()
+        trackAdapter = TrackAdapter().apply {
+            onLongClickTrack = { track ->
+                showDeleteTrackDialog(track)
+            }
+        }
+
         binding.listOfTracksInPlaylist.apply {
             adapter = trackAdapter
             layoutManager = LinearLayoutManager(requireContext())
         }
     }
+    private fun showDeleteTrackDialog(track: Track) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.delete_track))
+            .setMessage(getString(R.string.delete_track_message))
+            .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setPositiveButton(getString(R.string.delete)) { dialog, _ ->
+                viewModel.deleteTrackFromPlaylist(track.trackId)
+                dialog.dismiss()
+            }
+            .show()
+    }
 
-    private fun setupObservers() {
+        private fun setupObservers() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.tracks.collect { tracks ->
                 trackAdapter.trackList = ArrayList(tracks)
                 trackAdapter.notifyDataSetChanged()
+                if (tracks.isEmpty()) {
+                    binding.emptyPlaylistMessage.visibility = View.VISIBLE
+                    binding.listOfTracksInPlaylist.visibility = View.GONE
+                } else {
+                    binding.emptyPlaylistMessage.visibility = View.GONE
+                    binding.listOfTracksInPlaylist.visibility = View.VISIBLE
+                }
             }
         }
     }
+
     private fun updateUI(playlist: Playlist) {
         binding.apply {
             // Загружаем изображение
@@ -114,8 +155,14 @@ class EditPlaylistFragment : Fragment() {
             )
         }
     }
+
     override fun onResume() {
         super.onResume()
+        // Обновляем playlist
+        arguments?.getParcelable<Playlist>("playlist_key")?.let { playlist ->
+            viewModel.setPlaylist(playlist)
+            viewModel.refreshPlaylistData()
+        }
         viewModel.refreshPlaylistTracks()
     }
 }
