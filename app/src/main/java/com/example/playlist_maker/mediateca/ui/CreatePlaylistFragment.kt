@@ -79,21 +79,27 @@ class CreatePlaylistFragment : Fragment() {
     }
     private fun setupEditMode(playlist: Playlist) {
         binding.apply {
-            // Заполняем поля данными плейлиста
             name.editText?.setText(playlist.title)
             description.editText?.setText(playlist.description)
 
-            // Загружаем изображение
-            playlist.imagePath?.let { uri ->
-                cover.setImageURI(uri)
+            // Set button color based on title
+            btnCreate.setBackgroundColor(
+                if (playlist.title.isNotBlank()) Color.BLUE else Color.GRAY
+            )
+
+            // Handle cover image
+            if (playlist.imagePath != null) {
+                cover.setImageURI(playlist.imagePath)
+                cover.setBackgroundResource(0)
+            } else {
+                cover.setImageResource(R.drawable.error_image)
                 cover.setBackgroundResource(0)
             }
 
-            // Меняем текст кнопки
             btnCreate.text = getString(R.string.save)
+            header.text = getString(R.string.edit)
         }
 
-        // Передаем данные во ViewModel
         viewModel.initializeWithPlaylist(playlist)
     }
 
@@ -142,6 +148,9 @@ class CreatePlaylistFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 binding.btnCreate.isEnabled = !s.isNullOrBlank()
                 viewModel.setPlaylistTitle(s?.toString() ?: "")
+                binding.btnCreate.setBackgroundColor(
+                    if (s.isNullOrBlank()) Color.GRAY else Color.BLUE
+                )
             }
             override fun afterTextChanged(s: Editable?) {}
         })

@@ -78,4 +78,11 @@ class EditPlaylistViewModel(
         }
 
     }
+    fun deletePlaylist() {
+        viewModelScope.launch {
+            _playlist.value?.id?.let { playlistId ->
+                playlistInteractor.deletePlaylist(playlistId)
+            }
+        }
+    }
 }

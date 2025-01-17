@@ -141,7 +141,7 @@
         app:behavior_peekHeight="266dp"
         app:behavior_fitToContents="false"
         android:background="?attr/ColorWhiteOrBlack"
-
+        tools:visibility="gone"
         android:orientation="vertical"
         android:paddingHorizontal="16dp"
         app:behavior_hideable="false"

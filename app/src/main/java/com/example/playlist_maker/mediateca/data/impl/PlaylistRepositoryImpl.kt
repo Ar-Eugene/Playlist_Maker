@@ -111,6 +111,9 @@ class PlaylistRepositoryImpl(
         playlistDatabase.playlistDao().updatePlaylistTracks(playlistId, newTrackIds, newAmount)
 
     }
+    override suspend fun deletePlaylist(playlistId: Int) {
+        playlistDatabase.playlistDao().deletePlaylist(playlistId)
+    }
 
 
     }
