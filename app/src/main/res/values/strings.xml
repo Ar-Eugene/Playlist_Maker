@@ -79,6 +79,7 @@
     <string name="delete_playlist_message">Хотите удалить плейлист?</string>
     <string name="no">Нет</string>
     <string name="yes">Да</string>
+    <string name="finish_editing">Завершить редактирование ?</string>
 
 
 </resources>

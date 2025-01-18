@@ -9,12 +9,16 @@ import com.example.playlist_maker.search.domain.models.Track
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 class EditPlaylistViewModel(
     private val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
     private val _playlist = MutableStateFlow<Playlist?>(null)
     val playlist = _playlist.asStateFlow()
+
+    private val _length = MutableStateFlow(0)
+    val length = _length.asStateFlow()
 
     private val _tracks = MutableStateFlow<List<Track>>(emptyList())
     val tracks = _tracks.asStateFlow()
@@ -27,6 +31,10 @@ class EditPlaylistViewModel(
             val tracks = playlistInteractor.getTracksByIds(trackIds)
             Log.d("EditViewModel", "Loaded tracks: ${tracks.size}")
             _tracks.value = tracks
+
+            var length = 0L
+            tracks.forEach { length += it.trackTimeMillis }
+            _length.value = TimeUnit.MILLISECONDS.toMinutes(length).toInt()
         }
     }
 

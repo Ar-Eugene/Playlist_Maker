@@ -5,6 +5,7 @@ import android.util.Log
 import com.example.playlist_maker.mediateca.data.db.AppDatabase
 import com.example.playlist_maker.mediateca.data.db.PlaylistDatabase
 import com.example.playlist_maker.mediateca.data.db.entity.PlaylistEntity
+import com.example.playlist_maker.mediateca.data.db.entity.PlaylistTrackEntity
 import com.example.playlist_maker.mediateca.domain.db.PlaylistRepository
 import com.example.playlist_maker.mediateca.domain.models.Playlist
 import com.example.playlist_maker.search.domain.models.Track
@@ -13,8 +14,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class PlaylistRepositoryImpl(
-    private val playlistDatabase: PlaylistDatabase,
-    private val appDatabase: AppDatabase
+    private val playlistDatabase: PlaylistDatabase
 ) : PlaylistRepository {
     override suspend fun createPlaylist(playlist: Playlist) {
         val entity = PlaylistEntity(
@@ -53,32 +53,57 @@ class PlaylistRepositoryImpl(
         )
         playlistDatabase.playlistDao().updatePlaylist(entity)
     }
-    override suspend fun addTrackToPlaylist(trackId: Int, playlistId: Int): Boolean {
+
+    override suspend fun addTrackToPlaylist(trackId: Int, playlistId: Int, track: Track): Boolean {
         Log.d("PlaylistRepo", "Adding track $trackId to playlist $playlistId")
-        playlistDatabase.playlistDao().getPlaylists().first().find { it.id == playlistId }?.let { playlist ->
-            val currentTracks = playlist.trackIds?.split(",")?.toMutableList() ?: mutableListOf()
-            Log.d("PlaylistRepo", "Current tracks: $currentTracks")
+
+        val playlist = playlistDatabase.playlistDao().getPlaylistById(playlistId)
+        if (playlist != null) {
+            val playlistTrackEntity = PlaylistTrackEntity(
+                trackId = trackId.toString(),
+                trackName = track.trackName,
+                artistName = track.artistName,
+                trackTimeMillis = track.trackTimeMillis,
+                artworkUrl100 = track.artworkUrl100,
+                country = track.country,
+                collectionName = track.collectionName,
+                primaryGenreName = track.primaryGenreName,
+                releaseDate = track.releaseDate,
+                previewUrl = track.previewUrl
+            )
+            playlistDatabase.playlistTrackDao().insertTrack(playlistTrackEntity)
+
+            val currentTracks = playlist.trackIds?.split(",")?.filterNot { it.isEmpty() }?.toMutableList() ?: mutableListOf()
 
             if (!currentTracks.contains(trackId.toString())) {
                 currentTracks.add(trackId.toString())
-                val updatedPlaylist = playlist.copy(
-                    trackIds = currentTracks.joinToString(","),
-                    trackAmount = playlist.trackAmount + 1
+                val newTrackIds = currentTracks.joinToString(",")
+
+                playlistDatabase.playlistDao().updatePlaylistTracks(
+                    playlistId = playlistId,
+                    newTrackIds = newTrackIds,
+                    newAmount = playlist.trackAmount + 1
                 )
-                Log.d("PlaylistRepo", "Updated tracks: ${updatedPlaylist.trackIds}")
-                playlistDatabase.playlistDao().updatePlaylist(updatedPlaylist)
                 return true
             }
             return false
         }
         return false
     }
+
     override suspend fun getTracksByIds(trackIds: List<String>): List<Track> {
         Log.d("Repository", "Requesting tracks with IDs: $trackIds")
-        val entities = appDatabase.trackDao().getTracksByIds(trackIds)
+        val entities = playlistDatabase.playlistTrackDao().getTracksByIds(trackIds)
         Log.d("Repository", "Found entities: ${entities.map { it.trackId }}")
 
-        return entities.map { entity ->
+        // Создаем map для быстрого доступа к трекам по id
+        val tracksMap = entities.associateBy { it.trackId }
+
+        // Возвращаем треки в том же порядке, что и в trackIds (последний добавленный будет последним в списке)
+        val orderedTracks = trackIds.mapNotNull { id -> tracksMap[id] }
+
+        // Переворачиваем список, чтобы последний добавленный трек был первым
+        return orderedTracks.reversed().map { entity ->
             Track(
                 trackName = entity.trackName,
                 artistName = entity.artistName,
@@ -91,10 +116,9 @@ class PlaylistRepositoryImpl(
                 previewUrl = entity.previewUrl,
                 trackId = entity.trackId
             )
-        }.also {
-            Log.d("Repository", "Mapped to tracks: ${it.map { track -> track.trackId }}")
         }
     }
+
     override suspend fun getPlaylistById(playlistId: Int): Playlist? {
         return playlistDatabase.playlistDao().getPlaylistById(playlistId)?.let { entity ->
             Playlist(
@@ -107,13 +131,12 @@ class PlaylistRepositoryImpl(
             )
         }
     }
+
     override suspend fun updatePlaylistTracks(playlistId: Int, newTrackIds: String, newAmount: Int) {
         playlistDatabase.playlistDao().updatePlaylistTracks(playlistId, newTrackIds, newAmount)
-
     }
+
     override suspend fun deletePlaylist(playlistId: Int) {
         playlistDatabase.playlistDao().deletePlaylist(playlistId)
     }
-
-
-    }
+}

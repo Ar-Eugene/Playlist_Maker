@@ -15,8 +15,8 @@ class PlaylistInteractorImpl(
 
     override suspend fun updatePlaylist(playlist: Playlist) = repository.updatePlaylist(playlist)
 
-    override suspend fun addTrackToPlaylist(trackId: Int, playlistId: Int): Boolean {
-        return repository.addTrackToPlaylist(trackId, playlistId)
+    override suspend fun addTrackToPlaylist(trackId: Int, playlistId: Int,track: Track): Boolean {
+        return repository.addTrackToPlaylist(trackId, playlistId, track)
     }
     override suspend fun getTracksByIds(trackIds: List<String>): List<Track> {
         return repository.getTracksByIds(trackIds)

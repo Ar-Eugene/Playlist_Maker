@@ -67,6 +67,16 @@ class EditPlaylistFragment : Fragment() {
                 playlist?.let { updateUI(it) }
             }
         }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.length.collect { time ->
+                binding.tracksTime.text = resources.getQuantityString(
+                    R.plurals.minutes,
+                    time,
+                    time
+                )
+
+            }
+        }
         setupRecyclerView()
         setupObservers()
         setupClickListeners()
@@ -75,6 +85,8 @@ class EditPlaylistFragment : Fragment() {
 
     private fun setupClickListeners() {
         binding.menuBottomSheetEditPlaylist.setOnClickListener {
+            menuBottomSheetContainer.state = BottomSheetBehavior.STATE_HIDDEN
+
             val bundle = Bundle().apply {
                 putParcelable("edit_playlist", viewModel.playlist.value)
                 putBoolean("is_edit_mode", true)
@@ -103,6 +115,7 @@ class EditPlaylistFragment : Fragment() {
 
     private fun setupShareClickListeners() {
         val shareClickListener = View.OnClickListener {
+            menuBottomSheetContainer.state = BottomSheetBehavior.STATE_HIDDEN
             viewLifecycleOwner.lifecycleScope.launch {
                 viewModel.playlist.value?.let { playlist ->
                     if (playlist.trackAmount == 0) {
@@ -272,6 +285,7 @@ class EditPlaylistFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        menuBottomSheetContainer.state = BottomSheetBehavior.STATE_HIDDEN
         // Обновляем playlist
         arguments?.getParcelable<Playlist>("playlist_key")?.let { playlist ->
             viewModel.setPlaylist(playlist)

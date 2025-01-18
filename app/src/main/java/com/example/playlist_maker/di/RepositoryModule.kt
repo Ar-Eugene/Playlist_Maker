@@ -40,6 +40,6 @@ val repositoryModule = module {
     }
 
     factory<PlaylistRepository> {
-        PlaylistRepositoryImpl(get(),get())
+        PlaylistRepositoryImpl(get())
     }
 }

@@ -82,12 +82,11 @@ class CreatePlaylistFragment : Fragment() {
             name.editText?.setText(playlist.title)
             description.editText?.setText(playlist.description)
 
-            // Set button color based on title
-            btnCreate.setBackgroundColor(
-                if (playlist.title.isNotBlank()) Color.BLUE else Color.GRAY
-            )
+            // Активируем кнопку, так как название уже есть
+            btnCreate.isEnabled = true
+            btnCreate.setBackgroundColor(Color.BLUE)
 
-            // Handle cover image
+            // Устанавливаем изображение
             if (playlist.imagePath != null) {
                 cover.setImageURI(playlist.imagePath)
                 cover.setBackgroundResource(0)
@@ -222,8 +221,14 @@ class CreatePlaylistFragment : Fragment() {
     }
 
     private fun showExitConfirmationDialog() {
+        val dialogTitle = if (isEditMode) {
+            getString(R.string.finish_editing)
+        } else {
+            getString(R.string.dialog_title_finish_creation)
+        }
+
         AlertDialog.Builder(requireContext())
-            .setTitle(R.string.dialog_title_finish_creation)
+            .setTitle(dialogTitle)
             .setMessage(R.string.dialog_message_unsaved_data)
             .setPositiveButton(R.string.dialog_button_finish) { _, _ ->
                 val flag = arguments?.getBoolean("flagKey", false) ?: false

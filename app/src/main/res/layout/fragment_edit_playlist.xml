@@ -86,9 +86,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/playlistDescription"
             app:layout_constraintWidth_max="wrap"
-            app:layout_goneMarginStart="0dp"
-            android:text="Время в мин." />
-
+            app:layout_goneMarginStart="0dp" />
 
         <TextView
             android:id="@+id/tracks_count"

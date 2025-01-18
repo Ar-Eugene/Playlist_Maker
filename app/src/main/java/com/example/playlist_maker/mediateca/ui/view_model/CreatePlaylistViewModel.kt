@@ -68,6 +68,8 @@ class CreatePlaylistViewModel(
     }
     suspend fun updatePlaylist(): Boolean {
         return try {
+            if (playlistTitle.isBlank()) return false
+
             val updatedPlaylist = Playlist(
                 id = editingPlaylistId ?: return false,
                 title = playlistTitle,

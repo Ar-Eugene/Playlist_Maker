@@ -65,7 +65,11 @@ class PlayerViewModel(
     fun addTrackToPlaylist(playlistId: Int) {
         currentTrack?.let { track ->
             viewModelScope.launch {
-                val wasAdded = playlistInteractor.addTrackToPlaylist(track.trackId.toInt(), playlistId)
+                val wasAdded = playlistInteractor.addTrackToPlaylist(
+                    trackId = track.trackId.toInt(),
+                    playlistId = playlistId,
+                    track = track
+                )
                 val playlist = playlists.value?.find { it.id == playlistId }
                 _addToPlaylistResult.value = if (wasAdded) {
                     AddToPlaylistResult.Added(playlist?.title ?: "")
