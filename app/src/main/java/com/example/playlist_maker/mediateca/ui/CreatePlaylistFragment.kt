@@ -206,29 +206,32 @@ class CreatePlaylistFragment : Fragment() {
     }
 
     private fun handleBackPress() {
-        viewModel.hasChanges.value?.let { hasChanges ->
-            if (hasChanges) {
-                showExitConfirmationDialog()
+        if (isEditMode) {
+            val flag = arguments?.getBoolean("flagKey", false) ?: false
+            if (flag) {
+                requireActivity().finish()
             } else {
-                val flag = arguments?.getBoolean("flagKey", false) ?: false
-                if (flag) {
-                    requireActivity().finish()
+                findNavController().navigateUp()
+            }
+        } else {
+            viewModel.hasChanges.value?.let { hasChanges ->
+                if (hasChanges) {
+                    showExitConfirmationDialog()
                 } else {
-                    findNavController().navigateUp()
+                    val flag = arguments?.getBoolean("flagKey", false) ?: false
+                    if (flag) {
+                        requireActivity().finish()
+                    } else {
+                        findNavController().navigateUp()
+                    }
                 }
             }
         }
     }
 
     private fun showExitConfirmationDialog() {
-        val dialogTitle = if (isEditMode) {
-            getString(R.string.finish_editing)
-        } else {
-            getString(R.string.dialog_title_finish_creation)
-        }
-
         AlertDialog.Builder(requireContext())
-            .setTitle(dialogTitle)
+            .setTitle(R.string.dialog_title_finish_creation)
             .setMessage(R.string.dialog_message_unsaved_data)
             .setPositiveButton(R.string.dialog_button_finish) { _, _ ->
                 val flag = arguments?.getBoolean("flagKey", false) ?: false
