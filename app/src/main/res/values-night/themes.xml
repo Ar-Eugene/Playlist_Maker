@@ -10,6 +10,7 @@
         <item name="ColorWhiteOrBlack">@color/black</item>
         <item name="ColorBlueOrBlack">@color/black</item>
         <item name="ColorBlueOrWhite">@color/white</item>
+        <item name="ColorLightGreyOrWhite">@color/white</item>
     </style>
     <style name="Theme.Playlist_Maker" parent="Base.Theme.Playlist_Maker" />
 

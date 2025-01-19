@@ -15,6 +15,7 @@ import java.util.Locale
 class TrackAdapter : RecyclerView.Adapter<TrackAdapter.TrackHolder>() {
     var trackList = ArrayList<Track>()
     var onClickedTrack: ((Track) -> Unit)? = null
+    var onLongClickTrack: ((Track) -> Unit)? = null
 
     inner class TrackHolder(item: View) : RecyclerView.ViewHolder(item) {
         val binding = TrackItemBinding.bind(item)
@@ -31,8 +32,13 @@ class TrackAdapter : RecyclerView.Adapter<TrackAdapter.TrackHolder>() {
                 .centerCrop()
                 .transform(RoundedCorners(10))
                 .into(musicAlbumPicture)
+            itemView.setOnLongClickListener {
+                onLongClickTrack?.invoke(track)
+                true
+            }
 
         }
+
 
     }
 

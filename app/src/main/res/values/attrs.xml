@@ -6,4 +6,5 @@
     <attr name="ColorWhiteOrBlack" format="reference" />
     <attr name="ColorBlueOrBlack" format="reference" />
     <attr name="ColorBlueOrWhite" format="reference" />
+    <attr name="ColorLightGreyOrWhite" format="reference" />
 </resources>

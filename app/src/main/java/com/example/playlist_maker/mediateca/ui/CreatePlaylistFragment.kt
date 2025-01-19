@@ -20,11 +20,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.playlist_maker.R
 import com.example.playlist_maker.databinding.FragmentCreatePlaylistBinding
+import com.example.playlist_maker.mediateca.domain.models.Playlist
 import com.example.playlist_maker.mediateca.ui.view_model.CreatePlaylistViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CreatePlaylistFragment : Fragment() {
+    private var isEditMode = false
+    private var editingPlaylist: Playlist? = null
     private lateinit var binding: FragmentCreatePlaylistBinding
     private val viewModel: CreatePlaylistViewModel by viewModel()
 
@@ -62,15 +65,47 @@ class CreatePlaylistFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Получаем режим и плейлист из аргументов
+        isEditMode = arguments?.getBoolean("is_edit_mode", false) ?: false
+        editingPlaylist = arguments?.getParcelable("edit_playlist")
+
+        if (isEditMode && editingPlaylist != null) {
+            setupEditMode(editingPlaylist!!)
+        }
 
         setupClickListeners()
         setupTextListeners()
         observeChanges()
     }
+    private fun setupEditMode(playlist: Playlist) {
+        binding.apply {
+            name.editText?.setText(playlist.title)
+            description.editText?.setText(playlist.description)
+
+            // Активируем кнопку, так как название уже есть
+            btnCreate.isEnabled = true
+            btnCreate.setBackgroundColor(Color.BLUE)
+
+            // Устанавливаем изображение
+            if (playlist.imagePath != null) {
+                cover.setImageURI(playlist.imagePath)
+                cover.setBackgroundResource(0)
+            } else {
+                cover.setImageResource(R.drawable.error_image)
+                cover.setBackgroundResource(0)
+            }
+
+            btnCreate.text = getString(R.string.save)
+            header.text = getString(R.string.edit)
+        }
+
+        viewModel.initializeWithPlaylist(playlist)
+    }
+
+
 
     private fun setupClickListeners() {
         binding.cover.setOnClickListener {
-            // Открыть Intent для выбора изображения
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = "image/*"
@@ -84,14 +119,22 @@ class CreatePlaylistFragment : Fragment() {
 
         binding.btnCreate.setOnClickListener {
             lifecycleScope.launch {
-                if (viewModel.createPlaylist()) {
-                    val message = getString(R.string.playlist_created_message, viewModel.getPlaylistTitle())
-                    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-                    val flag = arguments?.getBoolean("flagKey", false) ?: false
-                    if (flag) {
-                        requireActivity().finish()
-                    } else {
+                if (isEditMode) {
+                    if (viewModel.updatePlaylist()) {
+                        val message = getString(R.string.playlist_update_message, viewModel.getPlaylistTitle())
+                        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
                         findNavController().navigateUp()
+                    }
+                } else {
+                    if (viewModel.createPlaylist()) {
+                        val message = getString(R.string.playlist_created_message, viewModel.getPlaylistTitle())
+                        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                        val flag = arguments?.getBoolean("flagKey", false) ?: false
+                        if (flag) {
+                            requireActivity().finish()
+                        } else {
+                            findNavController().navigateUp()
+                        }
                     }
                 }
             }
@@ -104,6 +147,9 @@ class CreatePlaylistFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 binding.btnCreate.isEnabled = !s.isNullOrBlank()
                 viewModel.setPlaylistTitle(s?.toString() ?: "")
+                binding.btnCreate.setBackgroundColor(
+                    if (s.isNullOrBlank()) Color.GRAY else Color.BLUE
+                )
             }
             override fun afterTextChanged(s: Editable?) {}
         })
@@ -160,15 +206,24 @@ class CreatePlaylistFragment : Fragment() {
     }
 
     private fun handleBackPress() {
-        viewModel.hasChanges.value?.let { hasChanges ->
-            if (hasChanges) {
-                showExitConfirmationDialog()
+        if (isEditMode) {
+            val flag = arguments?.getBoolean("flagKey", false) ?: false
+            if (flag) {
+                requireActivity().finish()
             } else {
-                val flag = arguments?.getBoolean("flagKey", false) ?: false
-                if (flag) {
-                    requireActivity().finish()
+                findNavController().navigateUp()
+            }
+        } else {
+            viewModel.hasChanges.value?.let { hasChanges ->
+                if (hasChanges) {
+                    showExitConfirmationDialog()
                 } else {
-                    findNavController().navigateUp()
+                    val flag = arguments?.getBoolean("flagKey", false) ?: false
+                    if (flag) {
+                        requireActivity().finish()
+                    } else {
+                        findNavController().navigateUp()
+                    }
                 }
             }
         }

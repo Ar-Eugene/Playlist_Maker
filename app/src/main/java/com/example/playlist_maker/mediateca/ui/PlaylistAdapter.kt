@@ -12,7 +12,9 @@ import com.example.playlist_maker.R
 import com.example.playlist_maker.databinding.PlaylistItemBigBinding
 import com.example.playlist_maker.mediateca.domain.models.Playlist
 
-class PlaylistAdapter : ListAdapter<Playlist, PlaylistAdapter.PlaylistViewHolder>(
+class PlaylistAdapter(
+    private val onItemClick: (Playlist) -> Unit
+) : ListAdapter<Playlist, PlaylistAdapter.PlaylistViewHolder>(
     object : DiffUtil.ItemCallback<Playlist>() {
         override fun areItemsTheSame(oldItem: Playlist, newItem: Playlist) = oldItem.id == newItem.id
         override fun areContentsTheSame(oldItem: Playlist, newItem: Playlist) = oldItem == newItem
@@ -28,13 +30,13 @@ class PlaylistAdapter : ListAdapter<Playlist, PlaylistAdapter.PlaylistViewHolder
     }
 
     override fun onBindViewHolder(holder: PlaylistViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), onItemClick)
     }
 
     class PlaylistViewHolder(
         private val binding: PlaylistItemBigBinding
     ) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(playlist: Playlist) {
+        fun bind(playlist: Playlist, onItemClick: (Playlist) -> Unit) {
             binding.apply {
                 bigNameOfThePlaylist.text = playlist.title
                 bigAmountTreks.text = itemView.context.resources.getQuantityString(
@@ -55,6 +57,8 @@ class PlaylistAdapter : ListAdapter<Playlist, PlaylistAdapter.PlaylistViewHolder
                 } else {
                     bigNameOfTheSong.setImageResource(R.drawable.error_image)
                 }
+
+                root.setOnClickListener { onItemClick(playlist) }
             }
         }
     }
